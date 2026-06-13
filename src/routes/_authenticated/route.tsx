@@ -1,11 +1,12 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 
-export const Route = createFileRoute("/")({
-  component: Index,
+export const Route = createFileRoute("/_authenticated")({
+  ssr: false,
+  component: AuthGate,
 });
 
-function Index() {
+function AuthGate() {
   const { session, loading } = useAuth();
   if (loading) {
     return (
@@ -14,5 +15,6 @@ function Index() {
       </div>
     );
   }
-  return <Navigate to={session ? "/home" : "/auth"} replace />;
+  if (!session) return <Navigate to="/auth" replace />;
+  return <Outlet />;
 }
