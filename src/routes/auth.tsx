@@ -14,8 +14,8 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
   head: () => ({
     meta: [
-      { title: "Sign in — Baseline YVR" },
-      { name: "description", content: "Sign in to join the Vancouver tennis community." },
+      { title: "Sign in — Mancouver" },
+      { name: "description", content: "Join Vancouver's tennis community and easily organize your next match." },
     ],
   }),
 });
