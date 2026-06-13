@@ -14,8 +14,8 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
   head: () => ({
     meta: [
-      { title: "Sign in — Baseline YVR" },
-      { name: "description", content: "Sign in to join the Vancouver tennis community." },
+      { title: "Sign in — Mancouver" },
+      { name: "description", content: "Join Vancouver's tennis community and easily organize your next match." },
     ],
   }),
 });
@@ -100,12 +100,16 @@ function AuthPage() {
       <div className="flex-1 flex items-center justify-center px-5 py-12">
         <div className="w-full max-w-sm">
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-extrabold italic uppercase tracking-tighter">
-              Baseline <span className="text-brand">YVR</span>
-            </h1>
-            <p className="text-[11px] mt-1 text-muted-foreground uppercase tracking-widest">
-              Vancouver Tennis Community
-            </p>
+          <div className="text-4xl mb-2">🎾</div>
+          <h1 className="text-3xl font-extrabold italic uppercase tracking-tighter">
+            Mancouver
+          </h1>
+          <p className="text-sm mt-1 text-brand font-semibold tracking-tight">
+            Find Your Next Rally
+          </p>
+          <p className="text-[11px] mt-2 text-muted-foreground">
+            Join Vancouver's tennis community and easily organize your next match.
+          </p>
           </div>
 
           <div className="bg-card border border-border rounded-3xl p-6">
@@ -153,9 +157,12 @@ function AuthPage() {
                   type="password"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  placeholder="••••••"
+                  placeholder="At least 6 characters"
                   autoComplete={mode === "signup" ? "new-password" : "current-password"}
                 />
+                {mode === "signup" && (
+                  <p className="text-[10px] text-muted-foreground">Any 6+ characters — no complexity rules.</p>
+                )}
               </div>
 
               {mode === "signup" && (

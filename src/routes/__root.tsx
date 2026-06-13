@@ -61,8 +61,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Baseline YVR — Vancouver Tennis Community" },
-      { name: "description", content: "Find tennis sessions, join your crew, and book courts across Vancouver." },
+      { title: "Mancouver — Find Your Next Rally" },
+      { name: "description", content: "Join Vancouver's tennis community and easily organize your next match." },
       { name: "theme-color", content: "#121417" },
     ],
     links: [
