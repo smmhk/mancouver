@@ -144,9 +144,9 @@ function HomePage() {
       <header className="sticky top-0 z-30 px-5 md:px-8 py-4 flex justify-between items-center border-b border-border bg-surface/80 backdrop-blur-md">
         <Link to="/home" className="block">
           <h1 className="text-xl font-extrabold italic uppercase tracking-tighter">
-            Baseline <span className="text-brand">YVR</span>
+            Mancouver
           </h1>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Vancouver Tennis Community</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Find Your Next Rally</p>
         </Link>
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:block">
