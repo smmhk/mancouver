@@ -157,9 +157,12 @@ function AuthPage() {
                   type="password"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  placeholder="••••••"
+                  placeholder="At least 6 characters"
                   autoComplete={mode === "signup" ? "new-password" : "current-password"}
                 />
+                {mode === "signup" && (
+                  <p className="text-[10px] text-muted-foreground">Any 6+ characters — no complexity rules.</p>
+                )}
               </div>
 
               {mode === "signup" && (
