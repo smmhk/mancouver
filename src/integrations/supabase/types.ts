@@ -17,30 +17,45 @@ export type Database = {
       courts: {
         Row: {
           address: string | null
+          city: string | null
           created_at: string
+          has_parking: boolean | null
+          has_washroom: boolean | null
           id: string
           latitude: number
+          lighted: boolean | null
           longitude: number
           name: string
           num_courts: number | null
+          surface_type: string | null
         }
         Insert: {
           address?: string | null
+          city?: string | null
           created_at?: string
+          has_parking?: boolean | null
+          has_washroom?: boolean | null
           id?: string
           latitude: number
+          lighted?: boolean | null
           longitude: number
           name: string
           num_courts?: number | null
+          surface_type?: string | null
         }
         Update: {
           address?: string | null
+          city?: string | null
           created_at?: string
+          has_parking?: boolean | null
+          has_washroom?: boolean | null
           id?: string
           latitude?: number
+          lighted?: boolean | null
           longitude?: number
           name?: string
           num_courts?: number | null
+          surface_type?: string | null
         }
         Relationships: []
       }

@@ -7,6 +7,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 import { CourtMap, type Court } from "@/components/CourtMap";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -48,6 +50,7 @@ export function CreateSessionSheet({
   const [courtId, setCourtId] = useState<string | null>(null);
   const [maxPlayers, setMaxPlayers] = useState(4);
   const [ntrp, setNtrp] = useState("Any");
+  const [courtSearch, setCourtSearch] = useState("");
 
   useEffect(() => { if (defaultDate) setDate(defaultDate); }, [defaultDate]);
 
@@ -66,6 +69,17 @@ export function CreateSessionSheet({
   });
 
   const selectedCourt = courts.find((c) => c.id === courtId) ?? null;
+
+  const filteredCourts = useMemo(() => {
+    const q = courtSearch.trim().toLowerCase();
+    const sorted = [...courts].sort((a, b) => a.name.localeCompare(b.name));
+    if (!q) return sorted;
+    return sorted.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        (c.address ?? "").toLowerCase().includes(q),
+    );
+  }, [courts, courtSearch]);
 
   const create = useMutation({
     mutationFn: async () => {
@@ -169,16 +183,46 @@ export function CreateSessionSheet({
           {/* Step 3: Court */}
           <div className="space-y-2">
             <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">3. Pick a court</Label>
-            <CourtMap courts={courts} selectedId={courtId} onSelect={(c) => setCourtId(c.id)} height={220} />
-            {selectedCourt ? (
-              <div className="p-3 bg-background/60 rounded-xl border border-border text-sm flex justify-between items-center">
-                <div>
-                  <div className="font-semibold">{selectedCourt.name}</div>
-                  {selectedCourt.address && <div className="text-[11px] text-muted-foreground">{selectedCourt.address}</div>}
-                </div>
+            <CourtMap courts={filteredCourts} selectedId={courtId} onSelect={(c) => setCourtId(c.id)} height={220} />
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={courtSearch}
+                onChange={(e) => setCourtSearch(e.target.value)}
+                placeholder="Search courts by name"
+                className="pl-9 bg-background/60 border-border"
+              />
+            </div>
+            <div className="max-h-48 overflow-y-auto rounded-xl border border-border bg-background/60 divide-y divide-border">
+              {filteredCourts.length === 0 ? (
+                <p className="p-3 text-xs text-muted-foreground">No courts match "{courtSearch}"</p>
+              ) : (
+                filteredCourts.map((c) => {
+                  const active = c.id === courtId;
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setCourtId(c.id)}
+                      className={cn(
+                        "w-full text-left px-3 py-2 text-sm transition-colors",
+                        active ? "bg-brand/15 text-brand font-semibold" : "hover:bg-background/80",
+                      )}
+                    >
+                      <div className="font-medium">{c.name}</div>
+                      {c.address && (
+                        <div className="text-[11px] text-muted-foreground">{c.address}</div>
+                      )}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+            {selectedCourt && (
+              <div className="p-3 bg-background/60 rounded-xl border border-border text-sm">
+                <div className="font-semibold">{selectedCourt.name}</div>
+                {selectedCourt.address && <div className="text-[11px] text-muted-foreground">{selectedCourt.address}</div>}
               </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">Tap a marker to select a court</p>
             )}
           </div>
 
