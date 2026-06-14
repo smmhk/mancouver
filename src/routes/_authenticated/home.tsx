@@ -70,14 +70,30 @@ function HomePage() {
       const { data, error } = await supabase
         .from("sessions")
         .select(`
-          id, creator_id, session_date, start_time, end_time, max_players, ntrp_min, ntrp_max,
+          id, creator_id, session_date, start_time, end_time, max_players, ntrp_min, ntrp_max, status,
           court:courts ( name ),
           participants:session_participants ( user_id )
         `)
         .gte("session_date", today)
+        .neq("status", "cancelled")
         .order("session_date")
         .order("start_time");
       if (error) throw error;
+
+      // Collect all participant user_ids and resolve display names from profiles.
+      const userIds = Array.from(
+        new Set((data ?? []).flatMap((s: any) => (s.participants ?? []).map((p: any) => p.user_id))),
+      );
+      let profilesById: Record<string, string> = {};
+      if (userIds.length > 0) {
+        const { data: profs, error: pErr } = await supabase
+          .from("profiles")
+          .select("id, display_name")
+          .in("id", userIds);
+        if (pErr) throw pErr;
+        profilesById = Object.fromEntries((profs ?? []).map((p) => [p.id, p.display_name]));
+      }
+
       return (data ?? []).map((s: any): SessionCardData => ({
         id: s.id,
         session_date: s.session_date,
@@ -90,6 +106,10 @@ function HomePage() {
         participant_count: s.participants?.length ?? 0,
         joined: !!s.participants?.some((p: any) => p.user_id === user?.id),
         is_creator: s.creator_id === user?.id,
+        participants: (s.participants ?? []).map((p: any) => ({
+          user_id: p.user_id,
+          display_name: profilesById[p.user_id] ?? "Player",
+        })),
       }));
     },
   });
@@ -112,12 +132,9 @@ function HomePage() {
   const leave = useMutation({
     mutationFn: async (sessionId: string) => {
       if (!user) throw new Error("Not signed in");
-      const { error } = await supabase
-        .from("session_participants")
-        .delete()
-        .eq("session_id", sessionId)
-        .eq("user_id", user.id);
+      const { data, error } = await supabase.rpc("leave_session", { _session_id: sessionId });
       if (error) throw error;
+      return data as { remaining: number; cancelled: boolean };
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["sessions"] }),
     onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't leave"),
