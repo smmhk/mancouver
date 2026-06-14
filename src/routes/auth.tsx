@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import heroImage from "@/assets/hero-tennis.jpg";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -97,10 +98,18 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen bg-surface flex flex-col">
-      <div className="flex-1 flex items-center justify-center px-5 py-12">
+      <div className="flex-1 flex items-center justify-center px-5 py-10">
         <div className="w-full max-w-sm">
+          <div className="mb-6 overflow-hidden rounded-3xl border border-border shadow-sm bg-card">
+            <img
+              src={heroImage}
+              alt="Tennis player lunging for a forehand on a grass court"
+              width={1536}
+              height={1024}
+              className="w-full h-44 object-cover"
+            />
+          </div>
           <div className="mb-8 text-center">
-          <div className="text-4xl mb-2">🎾</div>
           <h1 className="font-display text-4xl font-semibold tracking-tight text-brand">
             Mancouver
           </h1>
@@ -111,6 +120,7 @@ function AuthPage() {
             Join Vancouver's tennis community and easily organize your next match.
           </p>
           </div>
+
 
           <div className="bg-card border border-border rounded-3xl p-6">
             <div className="flex gap-2 mb-6 p-1 bg-background rounded-xl">
