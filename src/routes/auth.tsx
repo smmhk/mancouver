@@ -173,6 +173,26 @@ function AuthPage() {
               </div>
             )}
 
+            {pendingVerifyEmail && (
+              <div className="mb-4 rounded-2xl border border-border bg-cream p-4 text-sm">
+                <p className="font-semibold text-foreground">Please verify your email address to activate your account.</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  We sent a verification link to <span className="font-medium text-foreground">{pendingVerifyEmail}</span>. You need to verify before signing in.
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => resendVerification(pendingVerifyEmail)}
+                  disabled={resendBusy}
+                  variant="outline"
+                  className="mt-3 h-9 rounded-xl text-xs font-semibold uppercase tracking-wider"
+                >
+                  {resendBusy ? "Sending..." : "Resend verification email"}
+                </Button>
+              </div>
+            )}
+
+
+
             <form onSubmit={handleSubmit} className="space-y-4">
               {mode === "signup" && (
                 <div className="space-y-1.5">
