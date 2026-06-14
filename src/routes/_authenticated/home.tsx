@@ -123,7 +123,7 @@ function HomePage() {
           is_creator: s.creator_id === user?.id,
           participants: (s.participants ?? []).map((p: any) => ({
             user_id: p.user_id,
-            display_name: profilesById[p.user_id] ?? "Player",
+            display_name: profilesById[p.user_id] || "Unknown Player",
           })),
         }))
         .filter((s) => {
