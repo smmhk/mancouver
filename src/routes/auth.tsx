@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import heroImage from "@/assets/hero-tennis.jpg";
+import heroAsset from "@/assets/mancouver-hero.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -40,7 +40,7 @@ function AuthPage() {
   const { session } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState({ display_name: "", email: "", password: "", ntrp_rating: "3.0" });
+  const [form, setForm] = useState({ display_name: "", email: "", password: "", ntrp_rating: "2.5" });
 
   useEffect(() => {
     if (session) navigate({ to: "/home", replace: true });
@@ -100,23 +100,12 @@ function AuthPage() {
     <div className="min-h-screen bg-surface flex flex-col">
       <div className="flex-1 flex items-center justify-center px-5 py-10">
         <div className="w-full max-w-sm">
-          <div className="mb-6 relative overflow-hidden rounded-3xl border border-border shadow-md bg-card">
+          <div className="mb-6 overflow-hidden rounded-3xl border border-border shadow-md bg-card">
             <img
-              src={heroImage}
-              alt="Tennis player lunging for a forehand on a grass court"
-              width={1536}
-              height={1024}
-              className="w-full h-64 object-cover"
+              src={heroAsset.url}
+              alt="Mancouver — Find Your Next Rally"
+              className="w-full h-auto object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/85 via-brand-dark/35 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-6 text-center">
-              <h1 className="font-display text-5xl font-semibold tracking-tight text-white">
-                Mancouver
-              </h1>
-              <p className="text-sm mt-2 text-cream font-medium tracking-[0.2em] uppercase">
-                Find Your Next Rally
-              </p>
-            </div>
           </div>
 
 
@@ -142,7 +131,7 @@ function AuthPage() {
                   <Input
                     value={form.display_name}
                     onChange={(e) => setForm({ ...form, display_name: e.target.value })}
-                    placeholder="Marcus Chen"
+                    placeholder="Mandy"
                     maxLength={60}
                   />
                 </div>
