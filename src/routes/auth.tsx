@@ -195,23 +195,6 @@ function AuthPage() {
                 {busy ? "..." : mode === "signup" ? "Create account" : "Log in"}
               </Button>
             </form>
-
-            <div className="relative my-5">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-              <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
-                <span className="bg-card px-3 text-muted-foreground">or</span>
-              </div>
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleGoogle}
-              disabled={busy}
-              className="w-full h-12 rounded-xl border-border bg-background hover:bg-background/60 font-semibold"
-            >
-              Continue with Google
-            </Button>
           </div>
         </div>
       </div>
