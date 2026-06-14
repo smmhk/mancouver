@@ -283,7 +283,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          display_name: string | null
+          id: string | null
+          ntrp_rating: number | null
+        }
+        Insert: {
+          display_name?: string | null
+          id?: string | null
+          ntrp_rating?: number | null
+        }
+        Update: {
+          display_name?: string | null
+          id?: string | null
+          ntrp_rating?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       leave_session: { Args: { _session_id: string }; Returns: Json }
