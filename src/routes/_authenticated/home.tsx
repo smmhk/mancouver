@@ -98,7 +98,7 @@ function HomePage() {
       let profilesById: Record<string, string> = {};
       if (userIds.length > 0) {
         const { data: profs, error: pErr } = await supabase
-          .from("profiles")
+          .from("public_profiles" as any)
           .select("id, display_name")
           .in("id", userIds);
         if (pErr) throw pErr;
