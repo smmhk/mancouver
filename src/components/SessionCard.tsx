@@ -150,7 +150,8 @@ export function SessionCard({
                 <AlertDialogTitle>Cancel your reservation?</AlertDialogTitle>
                 <AlertDialogDescription>
                   Are you sure you want to cancel your reservation for this session?
-                  If fewer than 2 players remain, the session will be cancelled automatically.
+                  Sessions are not automatically cancelled due to low participation.
+                  Only weather-related cancellations may automatically cancel a session.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
