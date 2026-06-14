@@ -46,6 +46,25 @@ function AuthPage() {
   const [forgotOpen, setForgotOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotBusy, setForgotBusy] = useState(false);
+  const [pendingVerifyEmail, setPendingVerifyEmail] = useState<string | null>(null);
+  const [resendBusy, setResendBusy] = useState(false);
+
+  async function resendVerification(email: string) {
+    setResendBusy(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: `${window.location.origin}/home` },
+      });
+      if (error) throw error;
+      toast.success("Verification email sent. Please check your inbox.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not resend verification email");
+    } finally {
+      setResendBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (session) navigate({ to: "/home", replace: true });
@@ -70,7 +89,8 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success("Account created! Welcome to the court.");
+        setPendingVerifyEmail(parsed.data.email);
+        toast.success("Please verify your email address to activate your account.");
       } else {
         const parsed = loginSchema.safeParse(form);
         if (!parsed.success) {
@@ -81,7 +101,12 @@ function AuthPage() {
           email: parsed.data.email,
           password: parsed.data.password,
         });
-        if (error) throw error;
+        if (error) {
+          if (/confirm|verif/i.test(error.message)) {
+            setPendingVerifyEmail(parsed.data.email);
+          }
+          throw error;
+        }
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Auth failed");
@@ -147,6 +172,26 @@ function AuthPage() {
                 </p>
               </div>
             )}
+
+            {pendingVerifyEmail && (
+              <div className="mb-4 rounded-2xl border border-border bg-cream p-4 text-sm">
+                <p className="font-semibold text-foreground">Please verify your email address to activate your account.</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  We sent a verification link to <span className="font-medium text-foreground">{pendingVerifyEmail}</span>. You need to verify before signing in.
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => resendVerification(pendingVerifyEmail)}
+                  disabled={resendBusy}
+                  variant="outline"
+                  className="mt-3 h-9 rounded-xl text-xs font-semibold uppercase tracking-wider"
+                >
+                  {resendBusy ? "Sending..." : "Resend verification email"}
+                </Button>
+              </div>
+            )}
+
+
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {mode === "signup" && (
