@@ -55,7 +55,7 @@ function AuthPage() {
           toast.error(parsed.error.errors[0].message);
           return;
         }
-        const ntrpNum = parsed.data.ntrp_rating === "5.0+" ? "5.0" : parsed.data.ntrp_rating;
+        const ntrpNum = parsed.data.ntrp_rating;
         const { error } = await supabase.auth.signUp({
           email: parsed.data.email,
           password: parsed.data.password,
