@@ -98,11 +98,11 @@ function HomePage() {
       let profilesById: Record<string, string> = {};
       if (userIds.length > 0) {
         const { data: profs, error: pErr } = await supabase
-          .from("profiles")
+          .from("public_profiles" as any)
           .select("id, display_name")
           .in("id", userIds);
         if (pErr) throw pErr;
-        profilesById = Object.fromEntries((profs ?? []).map((p) => [p.id, p.display_name]));
+        profilesById = Object.fromEntries((profs ?? []).map((p: any) => [p.id, p.display_name]));
       }
 
       const now = Date.now();
