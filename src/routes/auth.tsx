@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import heroAsset from "@/assets/mancouver-hero.png.asset.json";
+import heroImage from "@/assets/mancouver-hero-v2.jpg";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -102,8 +102,10 @@ function AuthPage() {
         <div className="w-full max-w-sm">
           <div className="mb-6 overflow-hidden rounded-3xl border border-border shadow-md bg-card">
             <img
-              src={heroAsset.url}
+              src={heroImage}
               alt="Mancouver — Find Your Next Rally"
+              width={1536}
+              height={1024}
               className="w-full h-auto object-cover"
             />
           </div>
