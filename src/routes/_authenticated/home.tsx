@@ -214,7 +214,7 @@ function HomePage() {
                     setCreateDefault(selectedDate ?? new Date());
                     setCreateOpen(true);
                   }}
-                  className="bg-brand text-black hover:bg-brand-dark font-bold rounded-xl"
+                  className="bg-brand text-white hover:bg-brand-dark font-bold rounded-xl"
                 >
                   <Plus className="size-4 mr-1" /> Host a Game
                 </Button>
@@ -243,7 +243,7 @@ function HomePage() {
 
             <Button
               onClick={() => { setCreateDefault(selectedDate ?? new Date()); setCreateOpen(true); }}
-              className="w-full h-14 bg-brand text-black hover:bg-brand-dark rounded-2xl font-extrabold uppercase tracking-tighter italic text-base shadow-xl shadow-brand/10"
+              className="w-full h-14 bg-brand text-white hover:bg-brand-dark rounded-2xl font-extrabold uppercase tracking-tighter italic text-base shadow-xl shadow-brand/10"
             >
               <Plus className="size-5 mr-1" /> Host a Game
             </Button>
@@ -283,7 +283,7 @@ function HomePage() {
           className="flex flex-col items-center -translate-y-5"
           aria-label="Host a game"
         >
-          <div className="size-14 bg-brand rounded-full shadow-2xl shadow-brand/40 flex items-center justify-center text-black font-bold text-2xl">
+          <div className="size-14 bg-brand rounded-full shadow-2xl shadow-brand/40 flex items-center justify-center text-white font-bold text-2xl">
             <Plus className="size-7" strokeWidth={3} />
           </div>
         </button>

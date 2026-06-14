@@ -182,7 +182,7 @@ function AuthPage() {
               <Button
                 type="submit"
                 disabled={busy}
-                className="w-full bg-brand text-black hover:bg-brand-dark font-bold uppercase tracking-wider rounded-xl h-12"
+                className="w-full bg-brand text-white hover:bg-brand-dark font-bold uppercase tracking-wider rounded-xl h-12"
               >
                 {busy ? "..." : mode === "signup" ? "Create account" : "Log in"}
               </Button>
