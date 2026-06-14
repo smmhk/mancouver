@@ -136,7 +136,16 @@ function HomePage() {
       if (error) throw error;
       return data as { remaining: number; cancelled: boolean };
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["sessions"] }),
+    onSuccess: (res) => {
+      if (res?.cancelled) {
+        toast.message("Session cancelled", {
+          description: "Not enough players remained, so the session was cancelled.",
+        });
+      } else {
+        toast.success("Reservation cancelled.");
+      }
+      qc.invalidateQueries({ queryKey: ["sessions"] });
+    },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't leave"),
   });
 
