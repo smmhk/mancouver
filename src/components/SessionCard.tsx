@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { AlertTriangle, Calendar, Cloud, Clock, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -12,10 +12,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { wmoToDisplay, isSevereWeather } from "@/lib/weather";
 
 export interface SessionParticipant {
   user_id: string;
   display_name: string;
+}
+
+export interface SessionWeather {
+  code: number;
+  tempMax: number | null;
+  tempMin: number | null;
+  precipProbability: number | null;
 }
 
 export interface SessionCardData {
@@ -31,6 +39,7 @@ export interface SessionCardData {
   joined: boolean;
   is_creator: boolean;
   participants: SessionParticipant[];
+  weather: SessionWeather | null;
 }
 
 function formatTime(t: string) {
@@ -63,6 +72,9 @@ export function SessionCard({
   busy: boolean;
 }) {
   const full = s.participant_count >= s.max_players;
+  const w = s.weather;
+  const wDisplay = w ? wmoToDisplay(w.code) : null;
+  const severe = w ? isSevereWeather(w.code, w.precipProbability) : false;
 
   return (
     <div className="bg-card rounded-2xl p-5 sm:p-6 border border-border shadow-sm">
@@ -93,6 +105,40 @@ export function SessionCard({
           <span>{formatTime(s.start_time)} – {formatTime(s.end_time)}</span>
         </div>
       </div>
+
+      {/* Weather */}
+      {wDisplay && w && (
+        <div className="rounded-xl bg-surface/60 border border-border/60 p-4 mb-4">
+          <div className="flex items-center gap-2 mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            <Cloud className="size-3.5" /> Weather
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-3xl leading-none" aria-hidden>{wDisplay.icon}</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">{wDisplay.label}</p>
+              <p className="text-xs text-muted-foreground">
+                {w.tempMax != null ? `${Math.round(w.tempMax)}°C` : "—"}
+                {w.tempMin != null && <span className="text-muted-foreground/70"> / {Math.round(w.tempMin)}°C low</span>}
+              </p>
+            </div>
+            {w.precipProbability != null && (
+              <div className="text-right">
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Rain</p>
+                <p className="text-sm font-bold text-brand">{w.precipProbability}%</p>
+              </div>
+            )}
+          </div>
+          {severe && (
+            <div className="mt-3 flex items-start gap-2 p-2.5 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive">
+              <AlertTriangle className="size-4 mt-0.5 shrink-0" />
+              <div className="text-xs leading-snug">
+                <p className="font-bold">Weather Alert</p>
+                <p>Heavy rain or storms are expected during this session. It may be affected by weather conditions.</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Participants */}
       <div className="rounded-xl bg-surface/60 border border-border/60 p-4 mb-4">

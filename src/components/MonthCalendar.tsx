@@ -1,16 +1,23 @@
 import { addMonths, eachDayOfInterval, endOfMonth, endOfWeek, format, isSameDay, isSameMonth, startOfMonth, startOfWeek, subMonths } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { wmoToDisplay } from "@/lib/weather";
+
+export interface CalendarWeather {
+  code: number;
+}
 
 export function MonthCalendar({
   month,
   setMonth,
-  sessionDates,
+  sessionCountByDate,
+  weatherByDate,
   selected,
   onSelect,
 }: {
   month: Date;
   setMonth: (d: Date) => void;
-  sessionDates: Set<string>;
+  sessionCountByDate: Record<string, number>;
+  weatherByDate: Record<string, CalendarWeather>;
   selected: Date | null;
   onSelect: (d: Date) => void;
 }) {
@@ -26,7 +33,6 @@ export function MonthCalendar({
           <button
             onClick={() => setMonth(subMonths(month, 1))}
             className="size-8 rounded-lg bg-cream grid place-items-center text-muted-foreground hover:text-foreground transition-colors"
-
             aria-label="Previous month"
           >
             <ChevronLeft className="size-4" />
@@ -46,22 +52,28 @@ export function MonthCalendar({
       <div className="grid grid-cols-7 gap-1.5">
         {days.map((d) => {
           const key = format(d, "yyyy-MM-dd");
-          const hasSession = sessionDates.has(key);
+          const count = sessionCountByDate[key] ?? 0;
+          const weather = weatherByDate[key];
+          const display = weather ? wmoToDisplay(weather.code) : null;
           const inMonth = isSameMonth(d, month);
           const isSelected = selected && isSameDay(d, selected);
           return (
             <button
               key={key}
               onClick={() => onSelect(d)}
-              className={`aspect-square rounded-lg flex flex-col items-center justify-center text-sm relative transition-all
+              className={`aspect-square rounded-lg flex flex-col items-center justify-center gap-0.5 text-xs relative transition-all p-1
                 ${!inMonth ? "text-muted-foreground/40" : "text-foreground"}
                 ${isSelected ? "bg-brand text-white shadow-md shadow-brand/20" : "hover:bg-cream"}`}
             >
-              {format(d, "d")}
-              {hasSession && (
-                <div className={`absolute bottom-1.5 size-1 rounded-full ${isSelected ? "bg-white" : "bg-brand"}`} />
+              <span className="text-sm leading-none font-medium">{format(d, "d")}</span>
+              {display && inMonth && (
+                <span className="text-[11px] leading-none" title={display.label}>{display.icon}</span>
               )}
-
+              {count > 0 && (
+                <span className={`text-[9px] leading-none font-bold ${isSelected ? "text-white" : "text-brand"}`}>
+                  🎾 {count}
+                </span>
+              )}
             </button>
           );
         })}
