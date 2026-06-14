@@ -102,7 +102,9 @@ export function SessionCard({
         </div>
         <div className="flex items-center gap-2">
           <Clock className="size-4 text-brand" />
-          <span>{formatTime(s.start_time)} – {formatTime(s.end_time)}</span>
+          <span>
+            {formatTime(s.start_time)} – {formatTime(s.end_time)}
+          </span>
         </div>
       </div>
 
@@ -113,12 +115,16 @@ export function SessionCard({
             <Cloud className="size-3.5" /> Weather
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-3xl leading-none" aria-hidden>{wDisplay.icon}</span>
+            <span className="text-3xl leading-none" aria-hidden>
+              {wDisplay.icon}
+            </span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-foreground">{wDisplay.label}</p>
               <p className="text-xs text-muted-foreground">
                 {w.tempMax != null ? `${Math.round(w.tempMax)}°C` : "—"}
-                {w.tempMin != null && <span className="text-muted-foreground/70"> / {Math.round(w.tempMin)}°C low</span>}
+                {w.tempMin != null && (
+                  <span className="text-muted-foreground/70"> / {Math.round(w.tempMin)}°C low</span>
+                )}
               </p>
             </div>
             {w.precipProbability != null && (
@@ -158,10 +164,7 @@ export function SessionCard({
             <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-1.5">Players</p>
             <ul className="flex flex-wrap gap-1.5">
               {s.participants.map((p) => (
-                <li
-                  key={p.user_id}
-                  className="px-2.5 py-1 rounded-full bg-brand/10 text-brand text-xs font-medium"
-                >
+                <li key={p.user_id} className="px-2.5 py-1 rounded-full bg-brand/10 text-brand text-xs font-medium">
                   {p.display_name}
                 </li>
               ))}
@@ -175,9 +178,7 @@ export function SessionCard({
         {s.is_creator ? (
           <span className="text-[10px] font-bold uppercase tracking-widest text-brand">Your session</span>
         ) : (
-          <span className="text-[11px] text-muted-foreground">
-            {full && !s.joined ? "This session is full." : ""}
-          </span>
+          <span className="text-[11px] text-muted-foreground">{full && !s.joined ? "This session is full." : ""}</span>
         )}
 
         {s.joined ? (
@@ -195,16 +196,13 @@ export function SessionCard({
               <AlertDialogHeader>
                 <AlertDialogTitle>Cancel your reservation?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to cancel your reservation for this session?
-                  Sessions remain active as long as at least one participant is registered.
-                  Empty sessions are automatically cancelled.
+                  Are you sure you want to cancel your reservation for this session? Sessions remain active as long as
+                  at least one participant is registered. Empty sessions are automatically cancelled.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Keep Reservation</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onLeave(s.id)}>
-                  Yes, Cancel Reservation
-                </AlertDialogAction>
+                <AlertDialogAction onClick={() => onLeave(s.id)}>Yes, Cancel Reservation</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -214,7 +212,7 @@ export function SessionCard({
             onClick={() => onJoin(s.id)}
             className="px-6 rounded-xl bg-brand text-white hover:bg-brand-dark font-bold shadow-lg shadow-brand/10"
           >
-            {full ? "Full" : "Join Session"}
+            {full ? "Full" : "I'm down"}
           </Button>
         )}
       </div>
