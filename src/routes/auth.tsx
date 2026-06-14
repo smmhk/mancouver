@@ -46,6 +46,25 @@ function AuthPage() {
   const [forgotOpen, setForgotOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotBusy, setForgotBusy] = useState(false);
+  const [pendingVerifyEmail, setPendingVerifyEmail] = useState<string | null>(null);
+  const [resendBusy, setResendBusy] = useState(false);
+
+  async function resendVerification(email: string) {
+    setResendBusy(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: `${window.location.origin}/home` },
+      });
+      if (error) throw error;
+      toast.success("Verification email sent. Please check your inbox.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not resend verification email");
+    } finally {
+      setResendBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (session) navigate({ to: "/home", replace: true });
