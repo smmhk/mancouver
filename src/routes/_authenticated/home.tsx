@@ -243,7 +243,7 @@ function HomePage() {
 
             <Button
               onClick={() => { setCreateDefault(selectedDate ?? new Date()); setCreateOpen(true); }}
-              className="w-full h-14 bg-brand text-white hover:bg-brand-dark rounded-2xl font-extrabold uppercase tracking-tighter italic text-base shadow-xl shadow-brand/10"
+              className="w-full h-14 bg-brand text-white hover:bg-brand-dark rounded-2xl font-semibold tracking-tight text-base shadow-xl shadow-brand/10"
             >
               <Plus className="size-5 mr-1" /> Host a Game
             </Button>
