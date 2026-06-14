@@ -89,7 +89,8 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success("Account created! Welcome to the court.");
+        setPendingVerifyEmail(parsed.data.email);
+        toast.success("Please verify your email address to activate your account.");
       } else {
         const parsed = loginSchema.safeParse(form);
         if (!parsed.success) {
@@ -100,7 +101,12 @@ function AuthPage() {
           email: parsed.data.email,
           password: parsed.data.password,
         });
-        if (error) throw error;
+        if (error) {
+          if (/confirm|verif/i.test(error.message)) {
+            setPendingVerifyEmail(parsed.data.email);
+          }
+          throw error;
+        }
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Auth failed");
