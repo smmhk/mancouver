@@ -212,7 +212,7 @@ export function SessionCard({
             onClick={() => onJoin(s.id)}
             className="px-6 rounded-xl bg-brand text-white hover:bg-brand-dark font-bold shadow-lg shadow-brand/10"
           >
-            {full ? "Full" : "I'm down"}
+            {full ? "Full" : "I'm Down"}
           </Button>
         )}
       </div>
