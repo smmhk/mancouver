@@ -100,25 +100,23 @@ function AuthPage() {
     <div className="min-h-screen bg-surface flex flex-col">
       <div className="flex-1 flex items-center justify-center px-5 py-10">
         <div className="w-full max-w-sm">
-          <div className="mb-6 overflow-hidden rounded-3xl border border-border shadow-sm bg-card">
+          <div className="mb-6 relative overflow-hidden rounded-3xl border border-border shadow-md bg-card">
             <img
               src={heroImage}
               alt="Tennis player lunging for a forehand on a grass court"
               width={1536}
               height={1024}
-              className="w-full h-44 object-cover"
+              className="w-full h-64 object-cover"
             />
-          </div>
-          <div className="mb-8 text-center">
-          <h1 className="font-display text-4xl font-semibold tracking-tight text-brand">
-            Mancouver
-          </h1>
-          <p className="text-sm mt-1 text-brand font-semibold tracking-tight">
-            Find Your Next Rally
-          </p>
-          <p className="text-[11px] mt-2 text-muted-foreground">
-            Join Vancouver's tennis community and easily organize your next match.
-          </p>
+            <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/85 via-brand-dark/35 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6 text-center">
+              <h1 className="font-display text-5xl font-semibold tracking-tight text-white">
+                Mancouver
+              </h1>
+              <p className="text-sm mt-2 text-cream font-medium tracking-[0.2em] uppercase">
+                Find Your Next Rally
+              </p>
+            </div>
           </div>
 
 
