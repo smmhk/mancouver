@@ -132,11 +132,16 @@ function HomePage() {
   const leave = useMutation({
     mutationFn: async (sessionId: string) => {
       if (!user) throw new Error("Not signed in");
-      const { error } = await supabase.rpc("leave_session", { _session_id: sessionId });
+      const { data, error } = await supabase.rpc("leave_session", { _session_id: sessionId });
       if (error) throw error;
+      return data as { success: boolean; cancelled: boolean; remaining: number };
     },
-    onSuccess: () => {
-      toast.success("Reservation cancelled.");
+    onSuccess: (data) => {
+      if (data?.cancelled) {
+        toast.success("Reservation cancelled. Session has no remaining participants and was cancelled.");
+      } else {
+        toast.success("Reservation cancelled.");
+      }
       qc.invalidateQueries({ queryKey: ["sessions"] });
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't leave"),

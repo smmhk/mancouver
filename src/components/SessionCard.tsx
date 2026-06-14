@@ -150,8 +150,8 @@ export function SessionCard({
                 <AlertDialogTitle>Cancel your reservation?</AlertDialogTitle>
                 <AlertDialogDescription>
                   Are you sure you want to cancel your reservation for this session?
-                  Sessions are not automatically cancelled due to low participation.
-                  Only weather-related cancellations may automatically cancel a session.
+                  Sessions remain active as long as at least one participant is registered.
+                  Empty sessions are automatically cancelled.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
