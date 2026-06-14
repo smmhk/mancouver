@@ -240,6 +240,47 @@ export type Database = {
           },
         ]
       }
+      weather_forecasts: {
+        Row: {
+          court_id: string
+          fetched_at: string
+          forecast_date: string
+          id: string
+          precipitation_probability: number | null
+          temp_max: number | null
+          temp_min: number | null
+          weather_code: number
+        }
+        Insert: {
+          court_id: string
+          fetched_at?: string
+          forecast_date: string
+          id?: string
+          precipitation_probability?: number | null
+          temp_max?: number | null
+          temp_min?: number | null
+          weather_code: number
+        }
+        Update: {
+          court_id?: string
+          fetched_at?: string
+          forecast_date?: string
+          id?: string
+          precipitation_probability?: number | null
+          temp_max?: number | null
+          temp_min?: number | null
+          weather_code?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weather_forecasts_court_id_fkey"
+            columns: ["court_id"]
+            isOneToOne: false
+            referencedRelation: "courts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
