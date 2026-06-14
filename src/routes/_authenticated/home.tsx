@@ -143,7 +143,7 @@ function HomePage() {
       {/* Header */}
       <header className="sticky top-0 z-30 px-5 md:px-8 py-4 flex justify-between items-center border-b border-border bg-surface/80 backdrop-blur-md">
         <Link to="/home" className="block">
-          <h1 className="text-xl font-extrabold italic uppercase tracking-tighter">
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-brand">
             Mancouver
           </h1>
           <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Find Your Next Rally</p>

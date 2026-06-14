@@ -101,7 +101,7 @@ function AuthPage() {
         <div className="w-full max-w-sm">
           <div className="mb-8 text-center">
           <div className="text-4xl mb-2">🎾</div>
-          <h1 className="text-3xl font-extrabold italic uppercase tracking-tighter">
+          <h1 className="font-display text-4xl font-semibold tracking-tight text-brand">
             Mancouver
           </h1>
           <p className="text-sm mt-1 text-brand font-semibold tracking-tight">
@@ -119,7 +119,7 @@ function AuthPage() {
                   key={m}
                   onClick={() => setMode(m)}
                   className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${
-                    mode === m ? "bg-brand text-brand-foreground text-black" : "text-muted-foreground"
+                    mode === m ? "bg-brand text-white shadow-sm" : "text-muted-foreground"
                   }`}
                 >
                   {m === "login" ? "Log in" : "Sign up"}
