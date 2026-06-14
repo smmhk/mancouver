@@ -1,0 +1,1 @@
+GRANT SELECT ON public.public_profiles TO authenticated, anon;
