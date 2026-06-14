@@ -77,7 +77,8 @@ function HomePage() {
   const { data: sessionsRaw = [], isLoading } = useQuery({
     queryKey: ["sessions"],
     queryFn: async () => {
-      const today = format(new Date(), "yyyy-MM-dd");
+      const cutoffDate = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+      const twoDaysAgo = format(cutoffDate, "yyyy-MM-dd");
       const { data, error } = await supabase
         .from("sessions")
         .select(`
@@ -85,7 +86,7 @@ function HomePage() {
           court:courts ( id, name, latitude, longitude ),
           participants:session_participants ( user_id )
         `)
-        .gte("session_date", today)
+        .gte("session_date", twoDaysAgo)
         .neq("status", "cancelled")
         .order("session_date")
         .order("start_time");
@@ -104,23 +105,33 @@ function HomePage() {
         profilesById = Object.fromEntries((profs ?? []).map((p) => [p.id, p.display_name]));
       }
 
-      return (data ?? []).map((s: any) => ({
-        id: s.id as string,
-        session_date: s.session_date as string,
-        start_time: s.start_time as string,
-        end_time: s.end_time as string,
-        ntrp_min: s.ntrp_min as number | null,
-        ntrp_max: s.ntrp_max as number | null,
-        max_players: s.max_players as number,
-        court: s.court ? { id: s.court.id, name: s.court.name, latitude: s.court.latitude, longitude: s.court.longitude } : null,
-        participant_count: s.participants?.length ?? 0,
-        joined: !!s.participants?.some((p: any) => p.user_id === user?.id),
-        is_creator: s.creator_id === user?.id,
-        participants: (s.participants ?? []).map((p: any) => ({
-          user_id: p.user_id,
-          display_name: profilesById[p.user_id] ?? "Player",
-        })),
-      }));
+      const now = Date.now();
+      const ms24h = 24 * 60 * 60 * 1000;
+
+      return (data ?? [])
+        .map((s: any) => ({
+          id: s.id as string,
+          session_date: s.session_date as string,
+          start_time: s.start_time as string,
+          end_time: s.end_time as string,
+          ntrp_min: s.ntrp_min as number | null,
+          ntrp_max: s.ntrp_max as number | null,
+          max_players: s.max_players as number,
+          court: s.court ? { id: s.court.id, name: s.court.name, latitude: s.court.latitude, longitude: s.court.longitude } : null,
+          participant_count: s.participants?.length ?? 0,
+          joined: !!s.participants?.some((p: any) => p.user_id === user?.id),
+          is_creator: s.creator_id === user?.id,
+          participants: (s.participants ?? []).map((p: any) => ({
+            user_id: p.user_id,
+            display_name: profilesById[p.user_id] ?? "Player",
+          })),
+        }))
+        .filter((s) => {
+          const [y, mo, d] = s.session_date.split("-").map(Number);
+          const [h, m] = s.end_time.split(":").map(Number);
+          const endDateTime = new Date(y, mo - 1, d, h, m);
+          return endDateTime.getTime() >= now - ms24h;
+        });
     },
   });
 
