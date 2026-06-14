@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
-const NTRP_OPTIONS = ["Any", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"];
+const NTRP_OPTIONS = ["Any", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5"];
 
 function generateSlots(): string[] {
   const slots: string[] = [];
