@@ -50,8 +50,7 @@ export function CreateSessionSheet({
   const [courtId, setCourtId] = useState<string | null>(null);
   const [maxPlayers, setMaxPlayers] = useState(4);
   const [ntrp, setNtrp] = useState("Any");
-
-  useEffect(() => { if (defaultDate) setDate(defaultDate); }, [defaultDate]);
+  const [courtSearch, setCourtSearch] = useState("");
 
   const allSlots = useMemo(generateSlots, []);
 
