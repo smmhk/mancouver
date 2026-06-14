@@ -102,7 +102,7 @@ function HomePage() {
           .select("id, display_name")
           .in("id", userIds);
         if (pErr) throw pErr;
-        profilesById = Object.fromEntries((profs ?? []).map((p) => [p.id, p.display_name]));
+        profilesById = Object.fromEntries((profs ?? []).map((p: any) => [p.id, p.display_name]));
       }
 
       const now = Date.now();
