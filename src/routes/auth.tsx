@@ -20,7 +20,7 @@ export const Route = createFileRoute("/auth")({
   }),
 });
 
-const NTRP = ["2.5", "3.0", "3.5", "4.0", "4.5", "5.0+"];
+const NTRP = ["1.0", "1.5", "2.0", "2.5", "3.0", "3.5"];
 
 const signupSchema = z.object({
   display_name: z.string().trim().min(1, "Name required").max(60),
@@ -55,7 +55,7 @@ function AuthPage() {
           toast.error(parsed.error.errors[0].message);
           return;
         }
-        const ntrpNum = parsed.data.ntrp_rating === "5.0+" ? "5.0" : parsed.data.ntrp_rating;
+        const ntrpNum = parsed.data.ntrp_rating;
         const { error } = await supabase.auth.signUp({
           email: parsed.data.email,
           password: parsed.data.password,
