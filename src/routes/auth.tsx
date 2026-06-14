@@ -1,22 +1,22 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import heroImage from "@/assets/mancouver-hero-v2.jpg";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import heroImage from "@/assets/mancouver-hero-v3.jpg";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
   head: () => ({
     meta: [
-      { title: "Sign in — Mancouver" },
-      { name: "description", content: "Join Vancouver's tennis community and easily organize your next match." },
+      { title: "Welcome back — Mancouver" },
+      { name: "description", content: "Log in to Mancouver. Find players, book courts, and organize your next rally in Vancouver." },
     ],
   }),
 });
@@ -35,12 +35,17 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
+const resetSchema = z.object({ email: z.string().trim().email() });
+
 function AuthPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({ display_name: "", email: "", password: "", ntrp_rating: "2.5" });
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotBusy, setForgotBusy] = useState(false);
 
   useEffect(() => {
     if (session) navigate({ to: "/home", replace: true });
@@ -56,13 +61,12 @@ function AuthPage() {
           toast.error(parsed.error.errors[0].message);
           return;
         }
-        const ntrpNum = parsed.data.ntrp_rating;
         const { error } = await supabase.auth.signUp({
           email: parsed.data.email,
           password: parsed.data.password,
           options: {
             emailRedirectTo: `${window.location.origin}/home`,
-            data: { display_name: parsed.data.display_name, ntrp_rating: ntrpNum },
+            data: { display_name: parsed.data.display_name, ntrp_rating: parsed.data.ntrp_rating },
           },
         });
         if (error) throw error;
@@ -86,20 +90,33 @@ function AuthPage() {
     }
   }
 
-  async function handleGoogle() {
-    setBusy(true);
+  async function handleForgot(e: React.FormEvent) {
+    e.preventDefault();
+    const parsed = resetSchema.safeParse({ email: forgotEmail });
+    if (!parsed.success) {
+      toast.error("Please enter a valid email");
+      return;
+    }
+    setForgotBusy(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/home` });
-      if (result.error) toast.error("Google sign-in failed");
+      await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+    } catch {
+      // Intentionally ignore — always show the same message
     } finally {
-      setBusy(false);
+      setForgotBusy(false);
+      setForgotOpen(false);
+      setForgotEmail("");
+      toast.success("If an account with that email address exists, a password reset link has been sent.");
     }
   }
 
   return (
     <div className="min-h-screen bg-surface flex flex-col">
-      <div className="flex-1 flex items-center justify-center px-5 py-10">
-        <div className="w-full max-w-sm">
+      <main className="flex-1 flex items-start justify-center px-5 py-8">
+        <div className="w-full max-w-md">
+          {/* Hero */}
           <div className="mb-6 overflow-hidden rounded-3xl border border-border shadow-md bg-card">
             <img
               src={heroImage}
@@ -110,21 +127,26 @@ function AuthPage() {
             />
           </div>
 
-
-          <div className="bg-card border border-border rounded-3xl p-6">
-            <div className="flex gap-2 mb-6 p-1 bg-background rounded-xl">
-              {(["login", "signup"] as const).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setMode(m)}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${
-                    mode === m ? "bg-brand text-white shadow-sm" : "text-muted-foreground"
-                  }`}
-                >
-                  {m === "login" ? "Log in" : "Sign up"}
-                </button>
-              ))}
-            </div>
+          {/* Card */}
+          <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+            {mode === "login" ? (
+              <div className="mb-5 text-center">
+                <h1 className="font-display text-3xl text-foreground">Welcome Back</h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Log in to continue to Mancouver
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Find players. Book courts. Organize your next rally.
+                </p>
+              </div>
+            ) : (
+              <div className="mb-5 text-center">
+                <h1 className="font-display text-3xl text-foreground">Join Mancouver</h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Join Vancouver's tennis community and organize your next match.
+                </p>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {mode === "signup" && (
@@ -140,7 +162,7 @@ function AuthPage() {
               )}
 
               <div className="space-y-1.5">
-                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Email</Label>
+                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Email Address</Label>
                 <Input
                   type="email"
                   value={form.email}
@@ -151,7 +173,18 @@ function AuthPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Password</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Password</Label>
+                  {mode === "login" && (
+                    <button
+                      type="button"
+                      onClick={() => { setForgotEmail(form.email); setForgotOpen(true); }}
+                      className="text-[11px] font-medium text-brand hover:text-brand-dark underline-offset-2 hover:underline"
+                    >
+                      Forgot your password?
+                    </button>
+                  )}
+                </div>
                 <Input
                   type="password"
                   value={form.password}
@@ -159,9 +192,6 @@ function AuthPage() {
                   placeholder="At least 6 characters"
                   autoComplete={mode === "signup" ? "new-password" : "current-password"}
                 />
-                {mode === "signup" && (
-                  <p className="text-[10px] text-muted-foreground">Any 6+ characters — no complexity rules.</p>
-                )}
               </div>
 
               {mode === "signup" && (
@@ -183,12 +213,123 @@ function AuthPage() {
                 disabled={busy}
                 className="w-full bg-brand text-white hover:bg-brand-dark font-bold uppercase tracking-wider rounded-xl h-12"
               >
-                {busy ? "..." : mode === "signup" ? "Create account" : "Log in"}
+                {busy ? "..." : mode === "signup" ? "Create Account" : "Log In"}
               </Button>
             </form>
+
+            <div className="mt-5 text-center text-sm text-muted-foreground">
+              {mode === "login" ? (
+                <>
+                  Don't have an account?{" "}
+                  <button
+                    onClick={() => setMode("signup")}
+                    className="font-semibold text-brand hover:text-brand-dark"
+                  >
+                    Create Account
+                  </button>
+                </>
+              ) : (
+                <>
+                  Already a member?{" "}
+                  <button
+                    onClick={() => setMode("login")}
+                    className="font-semibold text-brand hover:text-brand-dark"
+                  >
+                    Log In
+                  </button>
+                </>
+              )}
+            </div>
           </div>
+
+          {/* Footer */}
+          <footer className="mt-10 space-y-8">
+            <section>
+              <h2 className="text-[10px] uppercase tracking-widest text-muted-foreground text-center mb-4">
+                What you can do
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  { icon: "🎾", title: "Find Players", body: "Connect with local tennis players." },
+                  { icon: "📍", title: "Book Courts", body: "Discover and reserve courts." },
+                  { icon: "📅", title: "Organize Matches", body: "Easily schedule your next rally." },
+                ].map((f) => (
+                  <div key={f.title} className="bg-card border border-border rounded-2xl p-4 text-center">
+                    <div className="text-2xl">{f.icon}</div>
+                    <div className="mt-2 font-semibold text-sm text-foreground">{f.title}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{f.body}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="text-[10px] uppercase tracking-widest text-muted-foreground text-center mb-4">
+                Built on trust
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  { icon: "🔒", title: "Safe & Secure", body: "Your account and data are protected." },
+                  { icon: "🤝", title: "Community First", body: "Built for Vancouver tennis players." },
+                  { icon: "🌲", title: "Vancouver Proud", body: "Supporting local courts and tennis communities." },
+                ].map((f) => (
+                  <div key={f.title} className="bg-cream border border-border rounded-2xl p-4 text-center">
+                    <div className="text-2xl">{f.icon}</div>
+                    <div className="mt-2 font-semibold text-sm text-foreground">{f.title}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{f.body}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <nav className="pt-6 border-t border-border">
+              <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+                {["About", "Courts", "Community", "Support", "Privacy Policy", "Terms of Service"].map((l) => (
+                  <li key={l}>
+                    <a href="#" className="hover:text-brand">{l}</a>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-center text-[11px] text-muted-foreground">
+                © {new Date().getFullYear()} Mancouver · Find Your Next Rally
+              </p>
+            </nav>
+          </footer>
         </div>
-      </div>
+      </main>
+
+      <Dialog open={forgotOpen} onOpenChange={setForgotOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">Reset your password</DialogTitle>
+            <DialogDescription>
+              Enter your email and we'll send you a secure link to set a new password.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleForgot} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Email Address</Label>
+              <Input
+                type="email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="you@email.com"
+                autoComplete="email"
+                autoFocus
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                type="submit"
+                disabled={forgotBusy}
+                className="w-full bg-brand text-white hover:bg-brand-dark font-bold uppercase tracking-wider rounded-xl h-11"
+              >
+                {forgotBusy ? "Sending..." : "Send Reset Link"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
