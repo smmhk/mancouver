@@ -70,6 +70,17 @@ export function CreateSessionSheet({
 
   const selectedCourt = courts.find((c) => c.id === courtId) ?? null;
 
+  const filteredCourts = useMemo(() => {
+    const q = courtSearch.trim().toLowerCase();
+    const sorted = [...courts].sort((a, b) => a.name.localeCompare(b.name));
+    if (!q) return sorted;
+    return sorted.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        (c.address ?? "").toLowerCase().includes(q),
+    );
+  }, [courts, courtSearch]);
+
   const create = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("Sign in required");
