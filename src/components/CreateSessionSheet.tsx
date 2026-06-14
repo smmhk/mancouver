@@ -52,6 +52,8 @@ export function CreateSessionSheet({
   const [ntrp, setNtrp] = useState("Any");
   const [courtSearch, setCourtSearch] = useState("");
 
+  useEffect(() => { if (defaultDate) setDate(defaultDate); }, [defaultDate]);
+
   const allSlots = useMemo(generateSlots, []);
 
   const { data: courts = [] } = useQuery({
