@@ -86,7 +86,7 @@ export function SessionCard({
         <Button
           disabled={busy || full}
           onClick={() => onJoin(s.id)}
-          className="sm:w-auto px-6 rounded-xl bg-brand text-black hover:bg-brand-dark font-bold shadow-lg shadow-brand/10"
+          className="sm:w-auto px-6 rounded-xl bg-brand text-white hover:bg-brand-dark font-bold shadow-lg shadow-brand/10"
         >
           {full ? "Full" : "I'm Down"}
         </Button>

@@ -59,13 +59,17 @@ export function CourtMap({
           disableDefaultUI: true,
           zoomControl: true,
           styles: [
-            { elementType: "geometry", stylers: [{ color: "#1e2128" }] },
-            { elementType: "labels.text.stroke", stylers: [{ color: "#121417" }] },
-            { elementType: "labels.text.fill", stylers: [{ color: "#94a3b8" }] },
-            { featureType: "road", elementType: "geometry", stylers: [{ color: "#2a2f37" }] },
-            { featureType: "water", elementType: "geometry", stylers: [{ color: "#0c1014" }] },
+            { elementType: "geometry", stylers: [{ color: "#f5f2e6" }] },
+            { elementType: "labels.text.stroke", stylers: [{ color: "#faf8f1" }] },
+            { elementType: "labels.text.fill", stylers: [{ color: "#5b6b62" }] },
+            { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+            { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#e7e2d0" }] },
+            { featureType: "water", elementType: "geometry", stylers: [{ color: "#dbe7d6" }] },
+            { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: "#eef0e3" }] },
+            { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#d8e6c8" }] },
             { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] },
           ],
+
         });
       })
       .catch(() => setError("Map failed to load"));
@@ -85,12 +89,13 @@ export function CourtMap({
         title: c.name,
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
-          scale: isSel ? 10 : 7,
-          fillColor: isSel ? "#d7ff54" : "#ffffff",
+          scale: isSel ? 11 : 7,
+          fillColor: isSel ? "#1f4d2a" : "#ffffff",
           fillOpacity: 1,
-          strokeColor: "#121417",
-          strokeWeight: 2,
+          strokeColor: isSel ? "#ffffff" : "#1f4d2a",
+          strokeWeight: 2.5,
         },
+
       });
       marker.addListener("click", () => onSelect(c));
       markersRef.current.set(c.id, marker);

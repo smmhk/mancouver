@@ -251,7 +251,7 @@ export function CreateSessionSheet({
           <Button
             onClick={() => create.mutate()}
             disabled={create.isPending}
-            className="w-full h-14 bg-brand text-black hover:bg-brand-dark rounded-2xl font-extrabold uppercase tracking-tighter italic text-base shadow-xl shadow-brand/20"
+            className="w-full h-14 bg-brand text-white hover:bg-brand-dark rounded-2xl font-semibold tracking-tight text-base shadow-xl shadow-brand/20"
           >
             {create.isPending ? "Publishing..." : "Publish Session"}
           </Button>

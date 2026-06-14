@@ -19,20 +19,21 @@ export function MonthCalendar({
   const days = eachDayOfInterval({ start, end });
 
   return (
-    <div className="bg-card rounded-3xl p-5 sm:p-6 border border-border">
+    <div className="bg-card rounded-3xl p-5 sm:p-6 border border-border shadow-sm">
       <div className="flex justify-between items-center mb-6">
         <h2 className="font-semibold text-base">{format(month, "MMMM yyyy")}</h2>
         <div className="flex gap-2">
           <button
             onClick={() => setMonth(subMonths(month, 1))}
-            className="size-8 rounded-lg bg-background/60 grid place-items-center text-muted-foreground hover:text-foreground"
+            className="size-8 rounded-lg bg-cream grid place-items-center text-muted-foreground hover:text-foreground transition-colors"
+
             aria-label="Previous month"
           >
             <ChevronLeft className="size-4" />
           </button>
           <button
             onClick={() => setMonth(addMonths(month, 1))}
-            className="size-8 rounded-lg bg-background/60 grid place-items-center text-muted-foreground hover:text-foreground"
+            className="size-8 rounded-lg bg-cream grid place-items-center text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Next month"
           >
             <ChevronRight className="size-4" />
@@ -52,14 +53,15 @@ export function MonthCalendar({
             <button
               key={key}
               onClick={() => onSelect(d)}
-              className={`aspect-square rounded-lg flex flex-col items-center justify-center text-sm relative transition-colors
-                ${!inMonth ? "text-muted-foreground/30" : "text-foreground"}
-                ${isSelected ? "bg-brand/15 text-brand ring-1 ring-brand/40" : "hover:bg-background/60"}`}
+              className={`aspect-square rounded-lg flex flex-col items-center justify-center text-sm relative transition-all
+                ${!inMonth ? "text-muted-foreground/40" : "text-foreground"}
+                ${isSelected ? "bg-brand text-white shadow-md shadow-brand/20" : "hover:bg-cream"}`}
             >
               {format(d, "d")}
               {hasSession && (
-                <div className={`absolute bottom-1.5 size-1 rounded-full ${isSelected ? "bg-brand" : "bg-red-500"}`} />
+                <div className={`absolute bottom-1.5 size-1 rounded-full ${isSelected ? "bg-white" : "bg-brand"}`} />
               )}
+
             </button>
           );
         })}
