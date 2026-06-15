@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Eye, EyeOff, Loader2, Upload, User as UserIcon } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,10 +16,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const NTRP_OPTIONS = ["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"];
 
 type Profile = {
   display_name: string | null;
   avatar_url: string | null;
+  ntrp_rating: number | null;
 } | null | undefined;
 
 interface Props {
@@ -41,8 +51,9 @@ export function AccountSettingsDialog({
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [displayName, setDisplayName] = useState(profile?.display_name ?? "");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [ntrp, setNtrp] = useState<string>(
+    profile?.ntrp_rating != null ? String(profile.ntrp_rating.toFixed(1)) : "",
+  );
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
 
@@ -50,12 +61,11 @@ export function AccountSettingsDialog({
   useEffect(() => {
     if (open) {
       setDisplayName(profile?.display_name ?? "");
-      setPassword("");
-      setShowPassword(false);
+      setNtrp(profile?.ntrp_rating != null ? profile.ntrp_rating.toFixed(1) : "");
       setPendingFile(null);
       setPendingPreview(null);
     }
-  }, [open, profile?.display_name]);
+  }, [open, profile?.display_name, profile?.ntrp_rating]);
 
   // Clean up object URLs
   useEffect(() => {
@@ -82,9 +92,11 @@ export function AccountSettingsDialog({
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const updates: { display_name?: string; avatar_url?: string } = {};
+      const trimmedName = displayName.trim();
+      if (!trimmedName) throw new Error("Display name cannot be empty");
 
-      // Avatar upload first
+      const updates: { display_name?: string; avatar_url?: string; ntrp_rating?: number } = {};
+
       if (pendingFile) {
         const ext = pendingFile.name.split(".").pop()?.toLowerCase() || "jpg";
         const path = `${user.id}/avatar-${Date.now()}.${ext}`;
@@ -95,24 +107,23 @@ export function AccountSettingsDialog({
         updates.avatar_url = path;
       }
 
-      const trimmedName = displayName.trim();
-      if (trimmedName && trimmedName !== profile?.display_name) {
+      if (trimmedName !== profile?.display_name) {
         updates.display_name = trimmedName;
       }
 
-      if (Object.keys(updates).length > 0) {
-        const { error: pErr } = await supabase
-          .from("profiles")
-          .update(updates)
-          .eq("id", user.id);
-        if (pErr) throw pErr;
+      const ntrpNum = ntrp ? Number(ntrp) : null;
+      if (ntrpNum !== profile?.ntrp_rating) {
+        if (ntrpNum == null) throw new Error("Please select an NTRP rating");
+        updates.ntrp_rating = ntrpNum;
       }
 
-      if (password) {
-        if (password.length < 6) throw new Error("Password must be at least 6 characters");
-        const { error: passErr } = await supabase.auth.updateUser({ password });
-        if (passErr) throw passErr;
-      }
+      if (Object.keys(updates).length === 0) return;
+
+      const { error: pErr } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", user.id);
+      if (pErr) throw pErr;
     },
     onSuccess: () => {
       toast.success("Profile updated");
@@ -203,35 +214,27 @@ export function AccountSettingsDialog({
 
           <Separator />
 
-          {/* Security */}
+          {/* NTRP rating */}
           <section className="space-y-3">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-              Security
+              NTRP Rating
             </p>
             <div className="space-y-1.5">
-              <Label htmlFor="password">New password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((s) => !s)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
+              <Label htmlFor="ntrp">Skill level</Label>
+              <Select value={ntrp} onValueChange={setNtrp}>
+                <SelectTrigger id="ntrp">
+                  <SelectValue placeholder="Select your NTRP rating" />
+                </SelectTrigger>
+                <SelectContent>
+                  {NTRP_OPTIONS.map((n) => (
+                    <SelectItem key={n} value={n}>
+                      {n}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <p className="text-[11px] text-muted-foreground">
-                Leave blank to keep your current password. For security, your existing
-                password cannot be displayed.
+                Reset or update your self-rated NTRP level. Saved when you click Save.
               </p>
             </div>
           </section>
