@@ -48,13 +48,28 @@ function HomePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("display_name, ntrp_rating, notifications_enabled")
+        .select("display_name, ntrp_rating, notifications_enabled, avatar_url")
         .eq("id", user!.id)
         .maybeSingle();
       if (error) throw error;
       return data;
     },
   });
+
+  // Signed URL for avatar (private bucket)
+  const { data: avatarUrl } = useQuery({
+    queryKey: ["avatar", user?.id, profile?.avatar_url],
+    enabled: !!user && !!profile?.avatar_url,
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from("avatars")
+        .createSignedUrl(profile!.avatar_url as string, 60 * 60);
+      if (error) throw error;
+      return data.signedUrl;
+    },
+  });
+
+  const [accountOpen, setAccountOpen] = useState(false);
 
   // Prompt push notifications once after signup if not yet enabled
   useEffect(() => {
