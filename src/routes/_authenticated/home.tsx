@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { SessionCard, type SessionCardData, type SessionWeather } from "@/components/SessionCard";
 import { MonthCalendar } from "@/components/MonthCalendar";
 import { CreateSessionSheet } from "@/components/CreateSessionSheet";
+import { AccountSettingsDialog } from "@/components/AccountSettingsDialog";
 import { enablePushNotifications } from "@/lib/push";
 import {
   fetchDailyForecast,
@@ -48,13 +49,28 @@ function HomePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("display_name, ntrp_rating, notifications_enabled")
+        .select("display_name, ntrp_rating, notifications_enabled, avatar_url")
         .eq("id", user!.id)
         .maybeSingle();
       if (error) throw error;
       return data;
     },
   });
+
+  // Signed URL for avatar (private bucket)
+  const { data: avatarUrl } = useQuery({
+    queryKey: ["avatar", user?.id, profile?.avatar_url],
+    enabled: !!user && !!profile?.avatar_url,
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from("avatars")
+        .createSignedUrl(profile!.avatar_url as string, 60 * 60);
+      if (error) throw error;
+      return data.signedUrl;
+    },
+  });
+
+  const [accountOpen, setAccountOpen] = useState(false);
 
   // Prompt push notifications once after signup if not yet enabled
   useEffect(() => {
@@ -301,9 +317,18 @@ function HomePage() {
               <p className="text-[10px] text-brand uppercase">NTRP {profile.ntrp_rating}</p>
             )}
           </div>
-          <div className="size-10 rounded-full bg-brand/10 border border-brand/20 grid place-items-center">
-            <span className="text-brand font-bold text-xs">{initials}</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => setAccountOpen(true)}
+            className="size-10 rounded-full bg-brand/10 border border-brand/20 grid place-items-center overflow-hidden hover:ring-2 hover:ring-brand/40 transition"
+            aria-label="Account settings"
+          >
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Your avatar" className="size-full object-cover" />
+            ) : (
+              <span className="text-brand font-bold text-xs">{initials}</span>
+            )}
+          </button>
           <button
             onClick={() => signOut()}
             className="size-9 grid place-items-center rounded-full text-muted-foreground hover:text-foreground"
@@ -515,6 +540,15 @@ function HomePage() {
         onOpenChange={setCreateOpen}
         defaultDate={createDefault}
       />
+      {user && (
+        <AccountSettingsDialog
+          open={accountOpen}
+          onOpenChange={setAccountOpen}
+          user={user}
+          profile={profile}
+          avatarPreviewUrl={avatarUrl ?? null}
+        />
+      )}
     </div>
   );
 }
