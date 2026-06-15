@@ -316,9 +316,18 @@ function HomePage() {
               <p className="text-[10px] text-brand uppercase">NTRP {profile.ntrp_rating}</p>
             )}
           </div>
-          <div className="size-10 rounded-full bg-brand/10 border border-brand/20 grid place-items-center">
-            <span className="text-brand font-bold text-xs">{initials}</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => setAccountOpen(true)}
+            className="size-10 rounded-full bg-brand/10 border border-brand/20 grid place-items-center overflow-hidden hover:ring-2 hover:ring-brand/40 transition"
+            aria-label="Account settings"
+          >
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Your avatar" className="size-full object-cover" />
+            ) : (
+              <span className="text-brand font-bold text-xs">{initials}</span>
+            )}
+          </button>
           <button
             onClick={() => signOut()}
             className="size-9 grid place-items-center rounded-full text-muted-foreground hover:text-foreground"
