@@ -37,12 +37,21 @@ const loginSchema = z.object({
 
 const resetSchema = z.object({ email: z.string().trim().email() });
 
+const REMEMBERED_EMAIL_KEY = "mancouver:remembered_email";
+
 function AuthPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState({ display_name: "", email: "", password: "", ntrp_rating: "2.5" });
+  const [form, setForm] = useState(() => {
+    const remembered = typeof window !== "undefined" ? window.localStorage.getItem(REMEMBERED_EMAIL_KEY) ?? "" : "";
+    return { display_name: "", email: remembered, password: "", ntrp_rating: "2.5" };
+  });
+  const [rememberMe, setRememberMe] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return !!window.localStorage.getItem(REMEMBERED_EMAIL_KEY);
+  });
   const [forgotOpen, setForgotOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotBusy, setForgotBusy] = useState(false);
