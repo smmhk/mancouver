@@ -116,6 +116,11 @@ function AuthPage() {
           }
           throw error;
         }
+        if (rememberMe) {
+          window.localStorage.setItem(REMEMBERED_EMAIL_KEY, parsed.data.email);
+        } else {
+          window.localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+        }
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Auth failed");
