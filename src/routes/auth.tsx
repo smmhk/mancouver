@@ -37,12 +37,21 @@ const loginSchema = z.object({
 
 const resetSchema = z.object({ email: z.string().trim().email() });
 
+const REMEMBERED_EMAIL_KEY = "mancouver:remembered_email";
+
 function AuthPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState({ display_name: "", email: "", password: "", ntrp_rating: "2.5" });
+  const [form, setForm] = useState(() => {
+    const remembered = typeof window !== "undefined" ? window.localStorage.getItem(REMEMBERED_EMAIL_KEY) ?? "" : "";
+    return { display_name: "", email: remembered, password: "", ntrp_rating: "2.5" };
+  });
+  const [rememberMe, setRememberMe] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return !!window.localStorage.getItem(REMEMBERED_EMAIL_KEY);
+  });
   const [forgotOpen, setForgotOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotBusy, setForgotBusy] = useState(false);
@@ -106,6 +115,11 @@ function AuthPage() {
             setPendingVerifyEmail(parsed.data.email);
           }
           throw error;
+        }
+        if (rememberMe) {
+          window.localStorage.setItem(REMEMBERED_EMAIL_KEY, parsed.data.email);
+        } else {
+          window.localStorage.removeItem(REMEMBERED_EMAIL_KEY);
         }
       }
     } catch (err) {
@@ -207,19 +221,25 @@ function AuthPage() {
               )}
 
               <div className="space-y-1.5">
-                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Email Address</Label>
+                <Label htmlFor="email" className="text-[10px] uppercase tracking-widest text-muted-foreground">Email Address</Label>
                 <Input
+                  id="email"
+                  name="email"
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder="you@email.com"
                   autoComplete="email"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                 />
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Password</Label>
+                  <Label htmlFor="password" className="text-[10px] uppercase tracking-widest text-muted-foreground">Password</Label>
                   {mode === "login" && (
                     <button
                       type="button"
@@ -231,6 +251,8 @@ function AuthPage() {
                   )}
                 </div>
                 <Input
+                  id="password"
+                  name="password"
                   type="password"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -238,6 +260,18 @@ function AuthPage() {
                   autoComplete={mode === "signup" ? "new-password" : "current-password"}
                 />
               </div>
+
+              {mode === "login" && (
+                <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 rounded border-border accent-brand"
+                  />
+                  Remember me on this device
+                </label>
+              )}
 
               {mode === "signup" && (
                 <div className="space-y-1.5">
