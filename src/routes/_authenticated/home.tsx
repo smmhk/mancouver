@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { SessionCard, type SessionCardData, type SessionWeather } from "@/components/SessionCard";
 import { MonthCalendar } from "@/components/MonthCalendar";
 import { CreateSessionSheet } from "@/components/CreateSessionSheet";
+import { AccountSettingsDialog } from "@/components/AccountSettingsDialog";
 import { enablePushNotifications } from "@/lib/push";
 import {
   fetchDailyForecast,
