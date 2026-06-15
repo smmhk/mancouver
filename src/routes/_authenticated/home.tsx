@@ -540,6 +540,15 @@ function HomePage() {
         onOpenChange={setCreateOpen}
         defaultDate={createDefault}
       />
+      {user && (
+        <AccountSettingsDialog
+          open={accountOpen}
+          onOpenChange={setAccountOpen}
+          user={user}
+          profile={profile}
+          avatarPreviewUrl={avatarUrl ?? null}
+        />
+      )}
     </div>
   );
 }
