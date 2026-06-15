@@ -221,19 +221,25 @@ function AuthPage() {
               )}
 
               <div className="space-y-1.5">
-                <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Email Address</Label>
+                <Label htmlFor="email" className="text-[10px] uppercase tracking-widest text-muted-foreground">Email Address</Label>
                 <Input
+                  id="email"
+                  name="email"
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder="you@email.com"
                   autoComplete="email"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                 />
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">Password</Label>
+                  <Label htmlFor="password" className="text-[10px] uppercase tracking-widest text-muted-foreground">Password</Label>
                   {mode === "login" && (
                     <button
                       type="button"
@@ -245,6 +251,8 @@ function AuthPage() {
                   )}
                 </div>
                 <Input
+                  id="password"
+                  name="password"
                   type="password"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -252,6 +260,18 @@ function AuthPage() {
                   autoComplete={mode === "signup" ? "new-password" : "current-password"}
                 />
               </div>
+
+              {mode === "login" && (
+                <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 rounded border-border accent-brand"
+                  />
+                  Remember me on this device
+                </label>
+              )}
 
               {mode === "signup" && (
                 <div className="space-y-1.5">
