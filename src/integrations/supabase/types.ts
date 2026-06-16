@@ -420,6 +420,18 @@ export type Database = {
       }
     }
     Functions: {
+      book_or_join_session: {
+        Args: {
+          _court_id: string
+          _end_time: string
+          _max_players: number
+          _ntrp_max?: number
+          _ntrp_min?: number
+          _session_date: string
+          _start_time: string
+        }
+        Returns: Json
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
