@@ -194,9 +194,16 @@ function HomePage() {
     });
   }, [uniqueCourts, persistForecast, user]);
 
+  // Tick every 30s so live status (NOW badge + past filtering) updates without manual refresh
+  const [nowTick, setNowTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setNowTick((n) => n + 1), 30_000);
+    return () => clearInterval(id);
+  }, []);
+
   // Attach per-session weather based on the session's court forecast for that date
   const sessions: SessionCardData[] = useMemo(() => {
-    return sessionsRaw.map((s) => {
+    const mapped = sessionsRaw.map((s) => {
       let weather: SessionWeather | null = null;
       if (s.court) {
         const list = forecastByCourt[s.court.id];
@@ -226,7 +233,9 @@ function HomePage() {
         weather,
       };
     });
-  }, [sessionsRaw, forecastByCourt]);
+    return filterAndSortSessions(mapped);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionsRaw, forecastByCourt, nowTick]);
 
   const join = useMutation({
     mutationFn: async (sessionId: string) => {
