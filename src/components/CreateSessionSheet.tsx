@@ -128,28 +128,33 @@ export function CreateSessionSheet({
 
       const ntrpVal = ntrp === "Any" ? null : Number(ntrp);
 
-      const { data: session, error } = await supabase
-        .from("sessions")
-        .insert({
-          creator_id: user.id,
-          court_id: courtId,
-          session_date: format(date, "yyyy-MM-dd"),
-          start_time: summaryStart,
-          end_time: summaryEnd,
-          max_players: maxPlayers,
-          ntrp_min: ntrpVal,
-          ntrp_max: ntrpVal,
-        })
-        .select()
-        .single();
+      const { data, error } = await supabase.rpc("book_or_join_session", {
+        _court_id: courtId,
+        _session_date: format(date, "yyyy-MM-dd"),
+        _start_time: summaryStart,
+        _end_time: summaryEnd,
+        _max_players: maxPlayers,
+        _ntrp_min: ntrpVal,
+        _ntrp_max: ntrpVal,
+      });
       if (error) throw error;
-
-      await supabase
-        .from("session_participants")
-        .insert({ session_id: session.id, user_id: user.id });
+      return data as { status: "created" | "joined" | "already_joined" | "full"; session_id: string };
     },
-    onSuccess: () => {
-      toast.success("Session published!");
+    onSuccess: (result) => {
+      switch (result.status) {
+        case "created":
+          toast.success("New tennis session created successfully.");
+          break;
+        case "joined":
+          toast.success("Existing session found. You have been added to the participant list.");
+          break;
+        case "already_joined":
+          toast("You are already registered for this session.");
+          break;
+        case "full":
+          toast.error("This session is full.");
+          return;
+      }
       qc.invalidateQueries({ queryKey: ["sessions"] });
       onOpenChange?.(false);
       setSlots([]);
@@ -157,6 +162,7 @@ export function CreateSessionSheet({
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Failed to create"),
   });
+
 
   const canSubmit = !!date && !!courtId && slots.length > 0 && !create.isPending;
 
