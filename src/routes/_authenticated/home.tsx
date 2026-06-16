@@ -20,6 +20,7 @@ import {
   type DailyForecast,
 } from "@/lib/weather";
 import { persistCourtForecast } from "@/lib/weather.functions";
+import { filterAndSortSessions } from "@/lib/sessions";
 
 export const Route = createFileRoute("/_authenticated/home")({
   component: HomePage,
@@ -121,33 +122,24 @@ function HomePage() {
         profilesById = Object.fromEntries((profs ?? []).map((p: any) => [p.id, p.display_name]));
       }
 
-      const now = Date.now();
-      const ms24h = 24 * 60 * 60 * 1000;
-
-      return (data ?? [])
-        .map((s: any) => ({
-          id: s.id as string,
-          session_date: s.session_date as string,
-          start_time: s.start_time as string,
-          end_time: s.end_time as string,
-          ntrp_min: s.ntrp_min as number | null,
-          ntrp_max: s.ntrp_max as number | null,
-          max_players: s.max_players as number,
-          court: s.court ? { id: s.court.id, name: s.court.name, latitude: s.court.latitude, longitude: s.court.longitude } : null,
-          participant_count: s.participants?.length ?? 0,
-          joined: !!s.participants?.some((p: any) => p.user_id === user?.id),
-          is_creator: s.creator_id === user?.id,
-          participants: (s.participants ?? []).map((p: any) => ({
-            user_id: p.user_id,
-            display_name: profilesById[p.user_id] || "Unknown Player",
-          })),
-        }))
-        .filter((s) => {
-          const [y, mo, d] = s.session_date.split("-").map(Number);
-          const [h, m] = s.end_time.split(":").map(Number);
-          const endDateTime = new Date(y, mo - 1, d, h, m);
-          return endDateTime.getTime() >= now - ms24h;
-        });
+      return (data ?? []).map((s: any) => ({
+        id: s.id as string,
+        session_date: s.session_date as string,
+        start_time: s.start_time as string,
+        end_time: s.end_time as string,
+        ntrp_min: s.ntrp_min as number | null,
+        ntrp_max: s.ntrp_max as number | null,
+        max_players: s.max_players as number,
+        status: s.status as string | undefined,
+        court: s.court ? { id: s.court.id, name: s.court.name, latitude: s.court.latitude, longitude: s.court.longitude } : null,
+        participant_count: s.participants?.length ?? 0,
+        joined: !!s.participants?.some((p: any) => p.user_id === user?.id),
+        is_creator: s.creator_id === user?.id,
+        participants: (s.participants ?? []).map((p: any) => ({
+          user_id: p.user_id,
+          display_name: profilesById[p.user_id] || "Unknown Player",
+        })),
+      }));
     },
   });
 
