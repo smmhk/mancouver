@@ -134,8 +134,9 @@ export function CreateSessionSheet({
         _start_time: summaryStart,
         _end_time: summaryEnd,
         _max_players: maxPlayers,
-        _ntrp_min: ntrpVal,
-        _ntrp_max: ntrpVal,
+        _ntrp_min: ntrpVal ?? undefined,
+        _ntrp_max: ntrpVal ?? undefined,
+
       });
       if (error) throw error;
       return data as { status: "created" | "joined" | "already_joined" | "full"; session_id: string };
