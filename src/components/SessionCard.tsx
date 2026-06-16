@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { wmoToDisplay, isSevereWeather } from "@/lib/weather";
+import { getSessionLiveStatus } from "@/lib/sessions";
 
 export interface SessionParticipant {
   user_id: string;
@@ -72,6 +73,7 @@ export function SessionCard({
   busy: boolean;
 }) {
   const full = s.participant_count >= s.max_players;
+  const isLive = getSessionLiveStatus(s) === "active";
   const w = s.weather;
   const wDisplay = w ? wmoToDisplay(w.code) : null;
   const severe = w ? isSevereWeather(w.code, w.precipProbability) : false;
@@ -89,9 +91,16 @@ export function SessionCard({
             {s.court?.name ?? "Tennis Session"}
           </h3>
         </div>
-        <span className="shrink-0 px-2 py-0.5 rounded bg-brand/10 text-brand text-[10px] font-bold uppercase tracking-wider">
-          {ntrpLabel(s.ntrp_min, s.ntrp_max)}
-        </span>
+        <div className="shrink-0 flex flex-col items-end gap-1">
+          {isLive && (
+            <span className="px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1 animate-pulse">
+              <span className="size-1.5 rounded-full bg-white" /> NOW
+            </span>
+          )}
+          <span className="px-2 py-0.5 rounded bg-brand/10 text-brand text-[10px] font-bold uppercase tracking-wider">
+            {ntrpLabel(s.ntrp_min, s.ntrp_max)}
+          </span>
+        </div>
       </div>
 
       {/* Date + time */}
