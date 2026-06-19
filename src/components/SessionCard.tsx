@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { AlertTriangle, Calendar, Cloud, Clock, MapPin, Users } from "lucide-react";
+import { AlertTriangle, Calendar, CalendarPlus, Cloud, Clock, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -12,8 +12,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { wmoToDisplay, isSevereWeather } from "@/lib/weather";
 import { getSessionLiveStatus } from "@/lib/sessions";
+import {
+  buildGoogleCalendarUrl,
+  buildOutlookCalendarUrl,
+  downloadICS,
+  type CalendarEventInput,
+} from "@/lib/calendar";
 
 export interface SessionParticipant {
   user_id: string;
