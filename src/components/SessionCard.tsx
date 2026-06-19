@@ -243,3 +243,61 @@ export function SessionCard({
     </div>
   );
 }
+
+function AddToCalendarMenu({ s }: { s: SessionCardData }) {
+  const title = `Tennis Session${s.court?.name ? ` – ${s.court.name}` : ""}`;
+  const location = s.court?.name ?? "Vancouver, BC";
+  const description = `Tennis session with ${s.participant_count}/${s.max_players} players.\nLevel: ${ntrpLabel(
+    s.ntrp_min,
+    s.ntrp_max,
+  )}\nView session: ${typeof window !== "undefined" ? window.location.origin : ""}/home`;
+
+  const baseEvent = (reminderMinutes: number): CalendarEventInput => ({
+    id: s.id,
+    title,
+    location,
+    description,
+    date: s.session_date,
+    startTime: s.start_time,
+    endTime: s.end_time,
+    reminderMinutes,
+    url: typeof window !== "undefined" ? `${window.location.origin}/home` : undefined,
+  });
+
+  const open = (kind: "apple" | "google" | "outlook", reminderMinutes = 60) => {
+    const ev = baseEvent(reminderMinutes);
+    if (kind === "apple") downloadICS(ev);
+    else if (kind === "google") window.open(buildGoogleCalendarUrl(ev), "_blank", "noopener,noreferrer");
+    else window.open(buildOutlookCalendarUrl(ev), "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label="Add to Calendar"
+          title="Add to Calendar"
+          className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-brand transition-colors"
+        >
+          <CalendarPlus className="size-3.5" />
+          <span>Add to Calendar</span>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="text-xs">Add to Calendar</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => open("apple")}>Apple Calendar (.ics)</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => open("google")}>Google Calendar</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => open("outlook")}>Outlook Calendar</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          Reminder (Apple .ics)
+        </DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => open("apple", 30)}>30 minutes before</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => open("apple", 60)}>1 hour before (default)</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => open("apple", 60 * 24)}>24 hours before</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
