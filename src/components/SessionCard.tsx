@@ -114,6 +114,7 @@ export function SessionCard({
           <span className="px-2 py-0.5 rounded bg-brand/10 text-brand text-[10px] font-bold uppercase tracking-wider">
             {ntrpLabel(s.ntrp_min, s.ntrp_max)}
           </span>
+          {s.joined && <AddToCalendarMenu s={s} />}
         </div>
       </div>
 
