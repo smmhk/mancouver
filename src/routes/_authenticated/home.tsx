@@ -232,6 +232,7 @@ function HomePage() {
         joined: s.joined,
         is_creator: s.is_creator,
         participants: s.participants,
+        guests: s.guests,
         weather,
       };
     });
