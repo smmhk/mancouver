@@ -28,6 +28,7 @@ import {
   downloadICS,
   type CalendarEventInput,
 } from "@/lib/calendar";
+import { SessionChat } from "@/components/SessionChat";
 
 export interface SessionParticipant {
   user_id: string;
@@ -196,6 +197,12 @@ export function SessionCard({
           </>
         )}
       </div>
+
+      {/* Chat (participants only) */}
+      {s.joined && (
+        <SessionChat sessionId={s.id} participants={s.participants} />
+      )}
+
 
       {/* Action */}
       <div className="flex items-center justify-between gap-3">
