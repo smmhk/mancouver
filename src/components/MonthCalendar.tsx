@@ -21,8 +21,8 @@ export function MonthCalendar({
   selected: Date | null;
   onSelect: (d: Date) => void;
 }) {
-  const start = startOfWeek(startOfMonth(month), { weekStartsOn: 1 });
-  const end = endOfWeek(endOfMonth(month), { weekStartsOn: 1 });
+  const start = startOfWeek(startOfMonth(month), { weekStartsOn: 0 });
+  const end = endOfWeek(endOfMonth(month), { weekStartsOn: 0 });
   const days = eachDayOfInterval({ start, end });
 
   return (
@@ -47,7 +47,7 @@ export function MonthCalendar({
         </div>
       </div>
       <div className="grid grid-cols-7 gap-1 text-center text-[10px] text-muted-foreground uppercase mb-2">
-        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
       </div>
       <div className="grid grid-cols-7 gap-1.5">
         {days.map((d) => {
