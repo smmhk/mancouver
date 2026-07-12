@@ -41,6 +41,11 @@ export interface SessionParticipant {
   display_name: string;
 }
 
+export interface SessionGuest {
+  id: string;
+  guest_name: string;
+}
+
 export interface SessionWeather {
   code: number;
   tempMax: number | null;
@@ -61,6 +66,7 @@ export interface SessionCardData {
   joined: boolean;
   is_creator: boolean;
   participants: SessionParticipant[];
+  guests: SessionGuest[];
   weather: SessionWeather | null;
 }
 
