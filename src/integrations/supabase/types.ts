@@ -271,6 +271,38 @@ export type Database = {
         }
         Relationships: []
       }
+      session_guests: {
+        Row: {
+          added_by: string
+          created_at: string
+          guest_name: string
+          id: string
+          session_id: string
+        }
+        Insert: {
+          added_by: string
+          created_at?: string
+          guest_name: string
+          id?: string
+          session_id: string
+        }
+        Update: {
+          added_by?: string
+          created_at?: string
+          guest_name?: string
+          id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_guests_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       session_messages: {
         Row: {
           content: string

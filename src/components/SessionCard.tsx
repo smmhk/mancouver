@@ -1,6 +1,12 @@
+import { useState } from "react";
 import { format } from "date-fns";
-import { AlertTriangle, Calendar, CalendarPlus, Cloud, Clock, MapPin, Users } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { AlertTriangle, Calendar, CalendarPlus, Cloud, Clock, MapPin, Plus, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +41,11 @@ export interface SessionParticipant {
   display_name: string;
 }
 
+export interface SessionGuest {
+  id: string;
+  guest_name: string;
+}
+
 export interface SessionWeather {
   code: number;
   tempMax: number | null;
@@ -55,6 +66,7 @@ export interface SessionCardData {
   joined: boolean;
   is_creator: boolean;
   participants: SessionParticipant[];
+  guests: SessionGuest[];
   weather: SessionWeather | null;
 }
 
@@ -176,13 +188,13 @@ export function SessionCard({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 text-sm font-semibold">
             <Users className="size-4 text-brand" />
-            <span>Participants: {s.participant_count}</span>
+            <span>Participants: {s.participant_count + s.guests.length}</span>
           </div>
           <span className="text-[11px] text-muted-foreground">
-            {s.participant_count} / {s.max_players}
+            {s.participant_count + s.guests.length} / {s.max_players}
           </span>
         </div>
-        {s.participants.length === 0 ? (
+        {s.participants.length === 0 && s.guests.length === 0 ? (
           <p className="text-xs text-muted-foreground italic">No players joined yet.</p>
         ) : (
           <>
@@ -193,10 +205,23 @@ export function SessionCard({
                   {p.display_name}
                 </li>
               ))}
+              {s.guests.map((g) => (
+                <li
+                  key={g.id}
+                  className="px-2.5 py-1 rounded-full bg-yellow-100 dark:bg-yellow-500/20 border border-yellow-300/70 dark:border-yellow-500/40 text-yellow-900 dark:text-yellow-100 text-xs font-medium inline-flex items-center gap-1.5"
+                  title="Guest player added by the host"
+                >
+                  <span>{g.guest_name}</span>
+                  <span className="text-[9px] uppercase tracking-wider opacity-70">guest</span>
+                  {s.is_creator && <GuestRemoveButton sessionId={s.id} guestId={g.id} />}
+                </li>
+              ))}
             </ul>
           </>
         )}
+        {s.is_creator && <GuestAddInline sessionId={s.id} />}
       </div>
+
 
       {/* Chat (participants only) */}
       {s.joined && (
@@ -308,3 +333,103 @@ function AddToCalendarMenu({ s }: { s: SessionCardData }) {
     </DropdownMenu>
   );
 }
+
+function GuestRemoveButton({ sessionId, guestId }: { sessionId: string; guestId: string }) {
+  const qc = useQueryClient();
+  const remove = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("session_guests" as never)
+        .delete()
+        .eq("id", guestId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["sessions"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed to remove guest"),
+  });
+  return (
+    <button
+      type="button"
+      aria-label={`Remove guest`}
+      onClick={() => remove.mutate()}
+      disabled={remove.isPending}
+      className="ml-0.5 -mr-1 size-4 grid place-items-center rounded-full hover:bg-yellow-500/20"
+    >
+      <X className="size-3" />
+      <span className="sr-only">Remove</span>
+      <span className="sr-only">{sessionId}</span>
+    </button>
+  );
+}
+
+function GuestAddInline({ sessionId }: { sessionId: string }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const add = useMutation({
+    mutationFn: async () => {
+      const trimmed = name.trim();
+      if (!trimmed) throw new Error("Enter a name");
+      if (!user) throw new Error("Not signed in");
+      const { error } = await supabase
+        .from("session_guests" as never)
+        .insert({ session_id: sessionId, added_by: user.id, guest_name: trimmed } as never);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setName("");
+      setOpen(false);
+      qc.invalidateQueries({ queryKey: ["sessions"] });
+      toast.success("Guest added");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed to add guest"),
+  });
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-brand transition-colors"
+      >
+        <Plus className="size-3.5" /> Add guest player
+      </button>
+    );
+  }
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        add.mutate();
+      }}
+      className="mt-3 flex items-center gap-2"
+    >
+      <Input
+        autoFocus
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Guest name"
+        maxLength={80}
+        className="h-9 text-sm bg-background"
+      />
+      <Button type="submit" size="sm" disabled={add.isPending || !name.trim()} className="h-9 bg-brand text-white hover:bg-brand-dark">
+        Add
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="ghost"
+        onClick={() => {
+          setOpen(false);
+          setName("");
+        }}
+        className="h-9"
+      >
+        Cancel
+      </Button>
+    </form>
+  );
+}
+
