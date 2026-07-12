@@ -15,16 +15,19 @@ interface ChatMessage {
 
 export function SessionChat({
   sessionId,
-  currentUserId,
   participants,
 }: {
   sessionId: string;
-  currentUserId: string;
   participants: { user_id: string; display_name: string }[];
 }) {
   const qc = useQueryClient();
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [text, setText] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
+  }, []);
 
   const nameMap = useMemo(() => {
     const m = new Map<string, string>();
