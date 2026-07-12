@@ -88,6 +88,7 @@ export function SessionChat({
 
   const send = useMutation({
     mutationFn: async (content: string) => {
+      if (!currentUserId) throw new Error("Not signed in");
       const { error } = await supabase
         .from("session_messages")
         .insert({ session_id: sessionId, user_id: currentUserId, content });
