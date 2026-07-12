@@ -101,8 +101,9 @@ function HomePage() {
         .select(`
           id, creator_id, session_date, start_time, end_time, max_players, ntrp_min, ntrp_max, status,
           court:courts ( id, name, latitude, longitude ),
-          participants:session_participants ( user_id )
-        `)
+          participants:session_participants ( user_id ),
+          guests:session_guests ( id, guest_name )
+        ` as never)
         .gte("session_date", twoDaysAgo)
         .neq("status", "cancelled")
         .order("session_date")
@@ -139,6 +140,7 @@ function HomePage() {
           user_id: p.user_id,
           display_name: profilesById[p.user_id] || "Unknown Player",
         })),
+        guests: (s.guests ?? []).map((g: any) => ({ id: g.id as string, guest_name: g.guest_name as string })),
       }));
     },
   });
