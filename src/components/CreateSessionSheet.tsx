@@ -80,18 +80,60 @@ export function CreateSessionSheet({
     },
   });
 
+  const { data: favoriteIds = [] } = useQuery({
+    queryKey: ["favorite-courts", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("favorite_courts")
+        .select("court_id");
+      if (error) throw error;
+      return (data ?? []).map((r) => r.court_id as string);
+    },
+  });
+  const favoriteSet = useMemo(() => new Set(favoriteIds), [favoriteIds]);
+
+  const toggleFavorite = useMutation({
+    mutationFn: async (courtId: string) => {
+      if (!user) throw new Error("Sign in required");
+      if (favoriteSet.has(courtId)) {
+        const { error } = await supabase
+          .from("favorite_courts")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("court_id", courtId);
+        if (error) throw error;
+        return { courtId, favorited: false };
+      }
+      const { error } = await supabase
+        .from("favorite_courts")
+        .insert({ user_id: user.id, court_id: courtId });
+      if (error) throw error;
+      return { courtId, favorited: true };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["favorite-courts", user?.id] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed to update favorite"),
+  });
+
   const selectedCourt = courts.find((c) => c.id === courtId) ?? null;
 
   const filteredCourts = useMemo(() => {
     const q = courtSearch.trim().toLowerCase();
-    const sorted = [...courts].sort((a, b) => a.name.localeCompare(b.name));
+    const sorted = [...courts].sort((a, b) => {
+      const fa = favoriteSet.has(a.id) ? 0 : 1;
+      const fb = favoriteSet.has(b.id) ? 0 : 1;
+      if (fa !== fb) return fa - fb;
+      return a.name.localeCompare(b.name);
+    });
     if (!q) return sorted;
     return sorted.filter(
       (c) =>
         c.name.toLowerCase().includes(q) ||
         (c.address ?? "").toLowerCase().includes(q),
     );
-  }, [courts, courtSearch]);
+  }, [courts, courtSearch, favoriteSet]);
 
   // Weather for selected court + date
   const { data: forecast } = useQuery({
