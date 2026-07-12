@@ -333,3 +333,103 @@ function AddToCalendarMenu({ s }: { s: SessionCardData }) {
     </DropdownMenu>
   );
 }
+
+function GuestRemoveButton({ sessionId, guestId }: { sessionId: string; guestId: string }) {
+  const qc = useQueryClient();
+  const remove = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("session_guests" as never)
+        .delete()
+        .eq("id", guestId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["sessions"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed to remove guest"),
+  });
+  return (
+    <button
+      type="button"
+      aria-label={`Remove guest`}
+      onClick={() => remove.mutate()}
+      disabled={remove.isPending}
+      className="ml-0.5 -mr-1 size-4 grid place-items-center rounded-full hover:bg-yellow-500/20"
+    >
+      <X className="size-3" />
+      <span className="sr-only">Remove</span>
+      <span className="sr-only">{sessionId}</span>
+    </button>
+  );
+}
+
+function GuestAddInline({ sessionId }: { sessionId: string }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const add = useMutation({
+    mutationFn: async () => {
+      const trimmed = name.trim();
+      if (!trimmed) throw new Error("Enter a name");
+      if (!user) throw new Error("Not signed in");
+      const { error } = await supabase
+        .from("session_guests" as never)
+        .insert({ session_id: sessionId, added_by: user.id, guest_name: trimmed } as never);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setName("");
+      setOpen(false);
+      qc.invalidateQueries({ queryKey: ["sessions"] });
+      toast.success("Guest added");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed to add guest"),
+  });
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-brand transition-colors"
+      >
+        <Plus className="size-3.5" /> Add guest player
+      </button>
+    );
+  }
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        add.mutate();
+      }}
+      className="mt-3 flex items-center gap-2"
+    >
+      <Input
+        autoFocus
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Guest name"
+        maxLength={80}
+        className="h-9 text-sm bg-background"
+      />
+      <Button type="submit" size="sm" disabled={add.isPending || !name.trim()} className="h-9 bg-brand text-white hover:bg-brand-dark">
+        Add
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="ghost"
+        onClick={() => {
+          setOpen(false);
+          setName("");
+        }}
+        className="h-9"
+      >
+        Cancel
+      </Button>
+    </form>
+  );
+}
+
