@@ -49,16 +49,29 @@ export function getSessionLiveStatus(
   return "upcoming";
 }
 
+function getVancouverTodayString(now: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Vancouver",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "00";
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+
 /**
- * Filters to only show non-cancelled sessions that are upcoming or
- * currently active in Vancouver local time. Sorts active first, then
- * upcoming by nearest start time.
+ * Filters to only show non-cancelled sessions that take place today or in
+ * the future in Vancouver local time. Sessions remain visible for the rest of
+ * their scheduled day and are hidden starting the next day. Sorts active
+ * first, then upcoming by nearest start time.
  */
 export function filterAndSortSessions<T extends SessionListItem>(sessions: T[]): T[] {
   const now = getVancouverNowString();
+  const today = getVancouverTodayString();
   return sessions
     .filter((s) => s.status !== "cancelled")
-    .filter((s) => getSessionLiveStatus(s, now) !== "past")
+    .filter((s) => s.session_date >= today)
     .sort((a, b) => {
       const sa = getSessionLiveStatus(a, now);
       const sb = getSessionLiveStatus(b, now);
