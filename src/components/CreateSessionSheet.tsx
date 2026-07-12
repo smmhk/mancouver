@@ -290,21 +290,45 @@ export function CreateSessionSheet({
               ) : (
                 filteredCourts.map((c) => {
                   const active = c.id === courtId;
+                  const fav = favoriteSet.has(c.id);
                   return (
-                    <button
+                    <div
                       key={c.id}
-                      type="button"
-                      onClick={() => setCourtId(c.id)}
                       className={cn(
-                        "w-full text-left px-3 py-2.5 text-sm transition-colors",
+                        "flex items-center gap-2 px-3 py-2.5 text-sm transition-colors",
                         active ? "bg-brand/10 text-brand font-semibold" : "hover:bg-cream",
                       )}
                     >
-                      <div className="font-medium">{c.name}</div>
-                      {c.address && (
-                        <div className="text-[11px] text-muted-foreground">{c.address}</div>
+                      <button
+                        type="button"
+                        onClick={() => setCourtId(c.id)}
+                        className="flex-1 min-w-0 text-left"
+                      >
+                        <div className="font-medium truncate">{c.name}</div>
+                        {c.address && (
+                          <div className="text-[11px] text-muted-foreground truncate">{c.address}</div>
+                        )}
+                      </button>
+                      {user && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite.mutate(c.id);
+                          }}
+                          aria-label={fav ? "Remove from favorites" : "Add to favorites"}
+                          aria-pressed={fav}
+                          className="shrink-0 p-1.5 rounded-full hover:bg-brand/10 transition-colors"
+                        >
+                          <Heart
+                            className={cn(
+                              "size-4 transition-colors",
+                              fav ? "fill-brand text-brand" : "text-muted-foreground",
+                            )}
+                          />
+                        </button>
                       )}
-                    </button>
+                    </div>
                   );
                 })
               )}
