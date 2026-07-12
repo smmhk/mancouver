@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { AlertTriangle, CalendarDays, Clock, MapPin, Search, Users } from "lucide-react";
+import { AlertTriangle, CalendarDays, Clock, Heart, MapPin, Search, Users } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -80,18 +80,60 @@ export function CreateSessionSheet({
     },
   });
 
+  const { data: favoriteIds = [] } = useQuery({
+    queryKey: ["favorite-courts", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("favorite_courts")
+        .select("court_id");
+      if (error) throw error;
+      return (data ?? []).map((r) => r.court_id as string);
+    },
+  });
+  const favoriteSet = useMemo(() => new Set(favoriteIds), [favoriteIds]);
+
+  const toggleFavorite = useMutation({
+    mutationFn: async (courtId: string) => {
+      if (!user) throw new Error("Sign in required");
+      if (favoriteSet.has(courtId)) {
+        const { error } = await supabase
+          .from("favorite_courts")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("court_id", courtId);
+        if (error) throw error;
+        return { courtId, favorited: false };
+      }
+      const { error } = await supabase
+        .from("favorite_courts")
+        .insert({ user_id: user.id, court_id: courtId });
+      if (error) throw error;
+      return { courtId, favorited: true };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["favorite-courts", user?.id] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed to update favorite"),
+  });
+
   const selectedCourt = courts.find((c) => c.id === courtId) ?? null;
 
   const filteredCourts = useMemo(() => {
     const q = courtSearch.trim().toLowerCase();
-    const sorted = [...courts].sort((a, b) => a.name.localeCompare(b.name));
+    const sorted = [...courts].sort((a, b) => {
+      const fa = favoriteSet.has(a.id) ? 0 : 1;
+      const fb = favoriteSet.has(b.id) ? 0 : 1;
+      if (fa !== fb) return fa - fb;
+      return a.name.localeCompare(b.name);
+    });
     if (!q) return sorted;
     return sorted.filter(
       (c) =>
         c.name.toLowerCase().includes(q) ||
         (c.address ?? "").toLowerCase().includes(q),
     );
-  }, [courts, courtSearch]);
+  }, [courts, courtSearch, favoriteSet]);
 
   // Weather for selected court + date
   const { data: forecast } = useQuery({
@@ -248,21 +290,45 @@ export function CreateSessionSheet({
               ) : (
                 filteredCourts.map((c) => {
                   const active = c.id === courtId;
+                  const fav = favoriteSet.has(c.id);
                   return (
-                    <button
+                    <div
                       key={c.id}
-                      type="button"
-                      onClick={() => setCourtId(c.id)}
                       className={cn(
-                        "w-full text-left px-3 py-2.5 text-sm transition-colors",
+                        "flex items-center gap-2 px-3 py-2.5 text-sm transition-colors",
                         active ? "bg-brand/10 text-brand font-semibold" : "hover:bg-cream",
                       )}
                     >
-                      <div className="font-medium">{c.name}</div>
-                      {c.address && (
-                        <div className="text-[11px] text-muted-foreground">{c.address}</div>
+                      <button
+                        type="button"
+                        onClick={() => setCourtId(c.id)}
+                        className="flex-1 min-w-0 text-left"
+                      >
+                        <div className="font-medium truncate">{c.name}</div>
+                        {c.address && (
+                          <div className="text-[11px] text-muted-foreground truncate">{c.address}</div>
+                        )}
+                      </button>
+                      {user && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite.mutate(c.id);
+                          }}
+                          aria-label={fav ? "Remove from favorites" : "Add to favorites"}
+                          aria-pressed={fav}
+                          className="shrink-0 p-1.5 rounded-full hover:bg-brand/10 transition-colors"
+                        >
+                          <Heart
+                            className={cn(
+                              "size-4 transition-colors",
+                              fav ? "fill-brand text-brand" : "text-muted-foreground",
+                            )}
+                          />
+                        </button>
                       )}
-                    </button>
+                    </div>
                   );
                 })
               )}

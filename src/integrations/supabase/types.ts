@@ -146,6 +146,32 @@ export type Database = {
         }
         Relationships: []
       }
+      favorite_courts: {
+        Row: {
+          court_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          court_id: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          court_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_courts_court_id_fkey"
+            columns: ["court_id"]
+            isOneToOne: false
+            referencedRelation: "courts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_settings: {
         Row: {
           created_at: string
