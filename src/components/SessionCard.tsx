@@ -198,6 +198,12 @@ export function SessionCard({
         )}
       </div>
 
+      {/* Chat (participants only) */}
+      {s.joined && (
+        <SessionChat sessionId={s.id} participants={s.participants} />
+      )}
+
+
       {/* Action */}
       <div className="flex items-center justify-between gap-3">
         {s.is_creator ? (
