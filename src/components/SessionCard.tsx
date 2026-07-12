@@ -1,6 +1,12 @@
+import { useState } from "react";
 import { format } from "date-fns";
-import { AlertTriangle, Calendar, CalendarPlus, Cloud, Clock, MapPin, Users } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { AlertTriangle, Calendar, CalendarPlus, Cloud, Clock, MapPin, Plus, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import {
   AlertDialog,
   AlertDialogAction,
