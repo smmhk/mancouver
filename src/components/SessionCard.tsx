@@ -188,13 +188,13 @@ export function SessionCard({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 text-sm font-semibold">
             <Users className="size-4 text-brand" />
-            <span>Participants: {s.participant_count}</span>
+            <span>Participants: {s.participant_count + s.guests.length}</span>
           </div>
           <span className="text-[11px] text-muted-foreground">
-            {s.participant_count} / {s.max_players}
+            {s.participant_count + s.guests.length} / {s.max_players}
           </span>
         </div>
-        {s.participants.length === 0 ? (
+        {s.participants.length === 0 && s.guests.length === 0 ? (
           <p className="text-xs text-muted-foreground italic">No players joined yet.</p>
         ) : (
           <>
@@ -205,10 +205,23 @@ export function SessionCard({
                   {p.display_name}
                 </li>
               ))}
+              {s.guests.map((g) => (
+                <li
+                  key={g.id}
+                  className="px-2.5 py-1 rounded-full bg-yellow-100 dark:bg-yellow-500/20 border border-yellow-300/70 dark:border-yellow-500/40 text-yellow-900 dark:text-yellow-100 text-xs font-medium inline-flex items-center gap-1.5"
+                  title="Guest player added by the host"
+                >
+                  <span>{g.guest_name}</span>
+                  <span className="text-[9px] uppercase tracking-wider opacity-70">guest</span>
+                  {s.is_creator && <GuestRemoveButton sessionId={s.id} guestId={g.id} />}
+                </li>
+              ))}
             </ul>
           </>
         )}
+        {s.is_creator && <GuestAddInline sessionId={s.id} />}
       </div>
+
 
       {/* Chat (participants only) */}
       {s.joined && (
