@@ -28,6 +28,7 @@ import {
   downloadICS,
   type CalendarEventInput,
 } from "@/lib/calendar";
+import { SessionChat } from "@/components/SessionChat";
 
 export interface SessionParticipant {
   user_id: string;
