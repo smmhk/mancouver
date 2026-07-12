@@ -209,17 +209,17 @@ export function SessionCard({
                 <li
                   key={g.id}
                   className="px-2.5 py-1 rounded-full bg-yellow-100 dark:bg-yellow-500/20 border border-yellow-300/70 dark:border-yellow-500/40 text-yellow-900 dark:text-yellow-100 text-xs font-medium inline-flex items-center gap-1.5"
-                  title="Guest player added by the host"
+                  title="Guest player added by a participant"
                 >
                   <span>{g.guest_name}</span>
                   <span className="text-[9px] uppercase tracking-wider opacity-70">guest</span>
-                  {s.is_creator && <GuestRemoveButton sessionId={s.id} guestId={g.id} />}
+                  {s.joined && <GuestRemoveButton sessionId={s.id} guestId={g.id} />}
                 </li>
               ))}
             </ul>
           </>
         )}
-        {s.is_creator && <GuestAddInline sessionId={s.id} />}
+        {s.joined && <GuestAddInline sessionId={s.id} />}
       </div>
 
 
