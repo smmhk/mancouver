@@ -1,5 +1,4 @@
 import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -204,6 +203,3 @@ function SharedSessionPage() {
   );
 }
 
-// Suppress unused import warning for effect-only import guard
-void useEffect;
-void useState;
