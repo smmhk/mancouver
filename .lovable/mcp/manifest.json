@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://audiruvpgprhvjkufrus.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "mancouver-mcp",
+      "version": "0.1.0",
+      "title": "Mancouver Tennis"
+    },
+    "tools": [
+      {
+        "name": "list_courts",
+        "title": "List tennis courts",
+        "description": "List all tennis courts in the Mancouver directory, sorted alphabetically. Returns id, name, address, coordinates, and amenities for each court.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_upcoming_sessions",
+        "title": "List upcoming sessions",
+        "description": "List scheduled tennis sessions on or after today, sorted by date and start time. Includes court, timing, NTRP range, and participant counts.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Maximum number of sessions to return (default 25)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_sessions",
+        "title": "List my sessions",
+        "description": "List sessions the signed-in user has joined, sorted by date. Includes court and timing details.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "book_or_join_session",
+        "title": "Book or join a session",
+        "description": "Book a tennis session at a court on a date/time. If a matching scheduled session already exists, the user joins it (subject to capacity); otherwise a new session is created. Returns status: created, joined, already_joined, or full.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "court_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Court id from list_courts."
+            },
+            "session_date": {
+              "type": "string",
+              "description": "Session date in YYYY-MM-DD (Vancouver local)."
+            },
+            "start_time": {
+              "type": "string",
+              "description": "Start time in HH:MM 24h format."
+            },
+            "end_time": {
+              "type": "string",
+              "description": "End time in HH:MM 24h format."
+            },
+            "max_players": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 8,
+              "description": "Maximum players for the session."
+            },
+            "ntrp_min": {
+              "type": "number",
+              "description": "Optional minimum NTRP rating."
+            },
+            "ntrp_max": {
+              "type": "number",
+              "description": "Optional maximum NTRP rating."
+            }
+          },
+          "required": [
+            "court_id",
+            "session_date",
+            "start_time",
+            "end_time",
+            "max_players"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "leave_session",
+        "title": "Leave a session",
+        "description": "Remove the signed-in user from a session they joined. If they were the last participant, the session is cancelled.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "session_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The session id to leave."
+            }
+          },
+          "required": [
+            "session_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_my_profile",
+        "title": "Get my profile",
+        "description": "Return the signed-in user's Mancouver profile (display name, email, NTRP rating).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

@@ -13,6 +13,9 @@ import heroImage from "@/assets/mancouver-hero-v3.jpg";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Welcome back — Mancouver" },
@@ -20,6 +23,11 @@ export const Route = createFileRoute("/auth")({
     ],
   }),
 });
+
+function safeNext(next: string | undefined): string | null {
+  if (!next || !next.startsWith("/") || next.startsWith("//")) return null;
+  return next;
+}
 
 const NTRP = ["1.0", "1.5", "2.0", "2.5", "3.0", "3.5"];
 
@@ -75,9 +83,17 @@ function AuthPage() {
     }
   }
 
+  const search = Route.useSearch();
   useEffect(() => {
-    if (session) navigate({ to: "/home", replace: true });
-  }, [session, navigate]);
+    if (session) {
+      const dest = safeNext(search.next);
+      if (dest) {
+        window.location.replace(dest);
+      } else {
+        navigate({ to: "/home", replace: true });
+      }
+    }
+  }, [session, navigate, search.next]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
