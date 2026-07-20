@@ -2,7 +2,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { AlertTriangle, Calendar, CalendarPlus, Cloud, Clock, MapPin, Plus, Users, X } from "lucide-react";
+import { AlertTriangle, Calendar, CalendarPlus, Cloud, Clock, MapPin, Plus, Share2, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -127,6 +127,7 @@ export function SessionCard({
           <span className="px-2 py-0.5 rounded bg-brand/10 text-brand text-[10px] font-bold uppercase tracking-wider">
             {ntrpLabel(s.ntrp_min, s.ntrp_max)}
           </span>
+          <ShareSessionButton s={s} />
           {s.joined && <AddToCalendarMenu s={s} />}
         </div>
       </div>
@@ -273,6 +274,66 @@ export function SessionCard({
         )}
       </div>
     </div>
+  );
+}
+
+function ShareSessionButton({ s }: { s: SessionCardData }) {
+  const [busy, setBusy] = useState(false);
+
+  const buildShareData = () => {
+    const url = `${window.location.origin}/s/${s.id}`;
+    const [y, m, d] = s.session_date.split("-").map(Number);
+    const dateLabel = format(new Date(y, m - 1, d), "EEE, MMM d");
+    const [sh, sm] = s.start_time.split(":").map(Number);
+    const td = new Date();
+    td.setHours(sh, sm, 0, 0);
+    const timeLabel = format(td, "h:mm a");
+    const court = s.court?.name ?? "Vancouver";
+    const title = `Tennis at ${court} — ${dateLabel}`;
+    const text = `Join me for tennis at ${court} on ${dateLabel} at ${timeLabel}. Tap to lock in your spot on Mancouver:`;
+    return { url, title, text };
+  };
+
+  const handleShare = async () => {
+    if (typeof window === "undefined") return;
+    setBusy(true);
+    const { url, title, text } = buildShareData();
+    try {
+      const nav = window.navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
+      if (typeof nav.share === "function") {
+        await nav.share({ title, text, url });
+      } else {
+        await navigator.clipboard.writeText(`${text} ${url}`);
+        toast.success("Share link copied to clipboard");
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        // user cancelled — no-op
+      } else {
+        try {
+          await navigator.clipboard.writeText(url);
+          toast.success("Share link copied to clipboard");
+        } catch {
+          toast.error("Could not open share sheet");
+        }
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleShare}
+      disabled={busy}
+      aria-label="Share session"
+      title="Share session"
+      className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-brand transition-colors disabled:opacity-50"
+    >
+      <Share2 className="size-3.5" />
+      <span>Share</span>
+    </button>
   );
 }
 
