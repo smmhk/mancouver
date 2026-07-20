@@ -277,6 +277,66 @@ export function SessionCard({
   );
 }
 
+function ShareSessionButton({ s }: { s: SessionCardData }) {
+  const [busy, setBusy] = useState(false);
+
+  const buildShareData = () => {
+    const url = `${window.location.origin}/s/${s.id}`;
+    const [y, m, d] = s.session_date.split("-").map(Number);
+    const dateLabel = format(new Date(y, m - 1, d), "EEE, MMM d");
+    const [sh, sm] = s.start_time.split(":").map(Number);
+    const td = new Date();
+    td.setHours(sh, sm, 0, 0);
+    const timeLabel = format(td, "h:mm a");
+    const court = s.court?.name ?? "Vancouver";
+    const title = `Tennis at ${court} — ${dateLabel}`;
+    const text = `Join me for tennis at ${court} on ${dateLabel} at ${timeLabel}. Tap to lock in your spot on Mancouver:`;
+    return { url, title, text };
+  };
+
+  const handleShare = async () => {
+    if (typeof window === "undefined") return;
+    setBusy(true);
+    const { url, title, text } = buildShareData();
+    try {
+      const nav = window.navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
+      if (typeof nav.share === "function") {
+        await nav.share({ title, text, url });
+      } else {
+        await navigator.clipboard.writeText(`${text} ${url}`);
+        toast.success("Share link copied to clipboard");
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        // user cancelled — no-op
+      } else {
+        try {
+          await navigator.clipboard.writeText(url);
+          toast.success("Share link copied to clipboard");
+        } catch {
+          toast.error("Could not open share sheet");
+        }
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleShare}
+      disabled={busy}
+      aria-label="Share session"
+      title="Share session"
+      className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-brand transition-colors disabled:opacity-50"
+    >
+      <Share2 className="size-3.5" />
+      <span>Share</span>
+    </button>
+  );
+}
+
 function AddToCalendarMenu({ s }: { s: SessionCardData }) {
   const title = `Tennis Session${s.court?.name ? ` – ${s.court.name}` : ""}`;
   const location = s.court?.name ?? "Vancouver, BC";
