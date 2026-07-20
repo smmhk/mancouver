@@ -2,7 +2,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { AlertTriangle, Calendar, CalendarPlus, Cloud, Clock, MapPin, Plus, Users, X } from "lucide-react";
+import { AlertTriangle, Calendar, CalendarPlus, Cloud, Clock, MapPin, Plus, Share2, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -127,6 +127,7 @@ export function SessionCard({
           <span className="px-2 py-0.5 rounded bg-brand/10 text-brand text-[10px] font-bold uppercase tracking-wider">
             {ntrpLabel(s.ntrp_min, s.ntrp_max)}
           </span>
+          <ShareSessionButton s={s} />
           {s.joined && <AddToCalendarMenu s={s} />}
         </div>
       </div>
