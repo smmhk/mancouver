@@ -29,7 +29,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(data.session);
       setLoading(false);
     });
-    return () => sub.subscription.unsubscribe();
+
+    // Mobile browsers suspend timers in background tabs, so the automatic token
+    // refresh can miss its window and the stored session looks "forgotten" on
+    // return. Nudge a refresh whenever the app becomes visible again.
+    const revalidate = () => {
+      if (document.visibilityState !== "visible") return;
+      void supabase.auth.getSession();
+    };
+    document.addEventListener("visibilitychange", revalidate);
+    window.addEventListener("focus", revalidate);
+
+    return () => {
+      sub.subscription.unsubscribe();
+      document.removeEventListener("visibilitychange", revalidate);
+      window.removeEventListener("focus", revalidate);
+    };
   }, []);
 
   return (
