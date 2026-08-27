@@ -15,6 +15,10 @@ function AuthGate() {
       </div>
     );
   }
-  if (!session) return <Navigate to="/auth" replace />;
+  if (!session) {
+    const next =
+      typeof window !== "undefined" ? window.location.pathname + window.location.search : undefined;
+    return <Navigate to="/auth" search={{ next }} replace />;
+  }
   return <Outlet />;
 }
