@@ -4,6 +4,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { readRememberedLogin, saveRememberedLogin, clearRememberedLogin } from "@/lib/remember-me";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -134,9 +135,9 @@ function AuthPage() {
           throw error;
         }
         if (rememberMe) {
-          window.localStorage.setItem(REMEMBERED_EMAIL_KEY, parsed.data.email);
+          saveRememberedLogin(parsed.data.email);
         } else {
-          window.localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+          clearRememberedLogin();
         }
       }
     } catch (err) {
