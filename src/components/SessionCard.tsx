@@ -106,7 +106,9 @@ export function SessionCard({
   const severe = w ? isSevereWeather(w.code, w.precipProbability) : false;
 
   return (
-    <div className="bg-card rounded-2xl p-5 sm:p-6 border border-border shadow-sm">
+    <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+      <div className="h-1.5 w-full bg-gradient-to-r from-brand via-sky to-ace" />
+      <div className="p-5 sm:p-6">
       {/* Header: court + level */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="min-w-0">
@@ -114,19 +116,20 @@ export function SessionCard({
             <MapPin className="size-3.5" />
             <span className="uppercase tracking-wide truncate">{s.court?.name ?? "Court TBA"}</span>
           </div>
-          <h3 className="text-lg sm:text-xl font-bold leading-tight text-foreground">
+          <h3 className="font-display text-xl sm:text-2xl leading-tight text-foreground">
             {s.court?.name ?? "Tennis Session"}
           </h3>
         </div>
         <div className="shrink-0 flex flex-col items-end gap-1">
           {isLive && (
-            <span className="px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1 animate-pulse">
-              <span className="size-1.5 rounded-full bg-white" /> NOW
+            <span className="px-2 py-0.5 rounded ace-chip text-[10px] inline-flex items-center gap-1 animate-pulse">
+              <span className="size-1.5 rounded-full bg-night" /> NOW
             </span>
           )}
           <span className="px-2 py-0.5 rounded bg-brand/10 text-brand text-[10px] font-bold uppercase tracking-wider">
             {ntrpLabel(s.ntrp_min, s.ntrp_max)}
           </span>
+
           <ShareSessionButton s={s} />
           {s.joined && <AddToCalendarMenu s={s} />}
         </div>
