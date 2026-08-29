@@ -184,8 +184,7 @@ function AuthPage() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-night via-night/40 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5 court-lines">
-              <span className="inline-block px-2 py-0.5 rounded ace-chip text-[10px]">Night Session</span>
-              <h1 className="mt-2 font-display text-4xl leading-none text-white">
+              <h1 className="font-display text-4xl leading-none text-white">
                 Man<span className="text-ace">couver</span>
               </h1>
               <p className="mt-1 text-[11px] uppercase tracking-[0.3em] text-white/75">Find Your Next Rally</p>
