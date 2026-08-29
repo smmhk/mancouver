@@ -177,9 +177,9 @@ function AuthPage() {
           <div className="mb-6 relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl night-band floodlight">
             <img
               src={heroImage}
-              alt="Night tennis under stadium floodlights with the New York skyline behind the court"
-              width={1536}
-              height={1024}
+              alt="Tennis player mid backhand on a floodlit night court with the New York skyline and Statue of Liberty behind"
+              width={1528}
+              height={1029}
               className="w-full h-auto object-cover opacity-95"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-night via-night/40 to-transparent" />
