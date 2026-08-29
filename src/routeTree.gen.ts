@@ -21,6 +21,7 @@ import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/h
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -91,6 +92,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
+  id: '/lovable/email/events',
+  path: '/lovable/email/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/s/$sessionId': typeof SSessionIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/hooks/session-reminders': typeof ApiPublicHooksSessionRemindersRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/s/$sessionId': typeof SSessionIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/hooks/session-reminders': typeof ApiPublicHooksSessionRemindersRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -194,6 +202,7 @@ export interface FileRoutesById {
   '/s/$sessionId': typeof SSessionIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/hooks/session-reminders': typeof ApiPublicHooksSessionRemindersRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -217,6 +226,7 @@ export interface FileRouteTypes {
     | '/s/$sessionId'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/api/public/hooks/session-reminders'
     | '/lovable/email/auth/preview'
@@ -238,6 +248,7 @@ export interface FileRouteTypes {
     | '/s/$sessionId'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/api/public/hooks/session-reminders'
     | '/lovable/email/auth/preview'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/s/$sessionId'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/lovable/email/events'
     | '/lovable/email/suppression'
     | '/api/public/hooks/session-reminders'
     | '/lovable/email/auth/preview'
@@ -282,6 +294,7 @@ export interface RootRouteChildren {
   SSessionIdRoute: typeof SSessionIdRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicHooksSessionRemindersRoute: typeof ApiPublicHooksSessionRemindersRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -377,6 +390,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/events': {
+      id: '/lovable/email/events'
+      path: '/lovable/email/events'
+      fullPath: '/lovable/email/events'
+      preLoaderRoute: typeof LovableEmailEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -461,6 +481,7 @@ const rootRouteChildren: RootRouteChildren = {
   SSessionIdRoute: SSessionIdRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  LovableEmailEventsRoute: LovableEmailEventsRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicHooksSessionRemindersRoute: ApiPublicHooksSessionRemindersRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
