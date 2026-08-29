@@ -276,8 +276,10 @@ export function SessionCard({
           </Button>
         )}
       </div>
+      </div>
     </div>
   );
+
 }
 
 function ShareSessionButton({ s }: { s: SessionCardData }) {
