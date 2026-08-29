@@ -325,22 +325,23 @@ function HomePage() {
           <button
             type="button"
             onClick={() => setAccountOpen(true)}
-            className="size-10 rounded-full bg-brand/10 border border-brand/20 grid place-items-center overflow-hidden hover:ring-2 hover:ring-brand/40 transition"
+            className="size-10 rounded-full bg-white/10 border border-white/25 grid place-items-center overflow-hidden hover:ring-2 hover:ring-ace/60 transition"
             aria-label="Account settings"
           >
             {avatarUrl ? (
               <img src={avatarUrl} alt="Your avatar" className="size-full object-cover" />
             ) : (
-              <span className="text-brand font-bold text-xs">{initials}</span>
+              <span className="text-ace font-bold text-xs">{initials}</span>
             )}
           </button>
           <button
             onClick={() => signOut()}
-            className="size-9 grid place-items-center rounded-full text-muted-foreground hover:text-foreground"
+            className="size-9 grid place-items-center rounded-full text-white/70 hover:text-ace"
             aria-label="Sign out"
           >
             <LogOut className="size-4" />
           </button>
+
         </div>
       </header>
 
