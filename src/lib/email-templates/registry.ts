@@ -1,4 +1,6 @@
 import type { ComponentType } from 'react'
+import { template as sessionReminderTemplate } from './session-reminder'
+
 
 export interface TemplateEntry {
   component: ComponentType<any>
