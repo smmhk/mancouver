@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import heroImage from "@/assets/mancouver-hero-v3.jpg";
+import heroImage from "@/assets/usopen-hero.jpg";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -177,7 +177,7 @@ function AuthPage() {
           <div className="mb-6 overflow-hidden rounded-3xl border border-border shadow-md bg-card">
             <img
               src={heroImage}
-              alt="Mancouver — Find Your Next Rally"
+              alt="Night tennis under stadium floodlights with the New York skyline behind the court"
               width={1536}
               height={1024}
               className="w-full h-auto object-cover"
