@@ -34,38 +34,50 @@
   --color-brand-dark: var(--brand-dark);
   --color-brand-foreground: var(--brand-foreground);
   --color-surface: var(--surface);
+  /* kept for backwards compatibility — now a light-blue panel tint */
   --color-cream: var(--cream);
-  --font-display: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  --color-night: var(--night);
+  --color-night-2: var(--night-2);
+  --color-ace: var(--ace);
+  --color-ace-dark: var(--ace-dark);
+  --color-sky: var(--sky);
+  --font-display: 'Anton', 'Archivo Black', 'Inter', system-ui, sans-serif;
   --font-sans: 'Inter', system-ui, sans-serif;
 }
 
 :root {
   --radius: 0.875rem;
-  /* Wimbledon-inspired light palette */
+  /* US Open / New York night palette */
   --background: #ffffff;
-  --surface: #faf8f1;            /* soft cream canvas */
-  --cream: #f3efe1;              /* accent cream */
-  --foreground: #11241a;         /* deep court green-black */
+  --surface: #f2f6fd;            /* cool court-side white */
+  --cream: #e6eefb;              /* light blue panel */
+  --foreground: #071634;         /* deep NY navy */
   --card: #ffffff;
-  --card-foreground: #11241a;
+  --card-foreground: #071634;
   --popover: #ffffff;
-  --popover-foreground: #11241a;
-  --primary: #1f4d2a;            /* Wimbledon dark green */
+  --popover-foreground: #071634;
+  --primary: #0b3d91;            /* US Open navy blue */
   --primary-foreground: #ffffff;
-  --secondary: #f3efe1;
-  --secondary-foreground: #11241a;
-  --muted: #f5f2e6;
-  --muted-foreground: #5b6b62;
-  --accent: #1f4d2a;
-  --accent-foreground: #ffffff;
-  --destructive: #b3261e;
+  --secondary: #e6eefb;
+  --secondary-foreground: #071634;
+  --muted: #eaf0fa;
+  --muted-foreground: #55688c;
+  --accent: #e6eefb;
+  --accent-foreground: #0b3d91;
+  --destructive: #d02736;
   --destructive-foreground: #ffffff;
-  --border: #e7e2d0;
-  --input: #e7e2d0;
-  --ring: #1f4d2a;
-  --brand: #1f4d2a;
-  --brand-dark: #143820;
+  --border: #d7e2f4;
+  --input: #d7e2f4;
+  --ring: #0b3d91;
+  --brand: #0b3d91;
+  --brand-dark: #072a68;
   --brand-foreground: #ffffff;
+  /* stadium night + tennis-ball accents */
+  --night: #041027;
+  --night-2: #0a2452;
+  --ace: #ffd400;                /* US Open yellow */
+  --ace-dark: #e0b800;
+  --sky: #4f9dfd;                /* floodlit light blue */
 }
 
 @layer base {
@@ -79,6 +91,77 @@
   }
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
+    font-weight: 400;
   }
+}
+
+/* Stadium night band: navy gradient with floodlight bloom */
+@utility night-band {
+  background:
+    radial-gradient(120% 140% at 15% -20%, color-mix(in oklab, var(--sky) 40%, transparent) 0%, transparent 55%),
+    radial-gradient(100% 120% at 90% -10%, color-mix(in oklab, var(--ace) 22%, transparent) 0%, transparent 50%),
+    linear-gradient(160deg, var(--night-2) 0%, var(--night) 100%);
+  color: #ffffff;
+}
+
+/* Faint painted court lines */
+@utility court-lines {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, #ffffff 22%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, #ffffff 14%, transparent) 1px, transparent 1px);
+    background-size: 88px 100%, 100% 64px;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent 85%);
+  }
+}
+
+/* NYC skyline strip drawn in CSS */
+@utility skyline {
+  background-repeat: repeat-x;
+  background-position: bottom;
+  background-size: 190px 100%;
+  background-image:
+    linear-gradient(to top, color-mix(in oklab, var(--night) 85%, transparent), transparent),
+    conic-gradient(from 0deg at 0 0, transparent 0 0),
+    repeating-linear-gradient(
+      to right,
+      color-mix(in oklab, #ffffff 10%, transparent) 0 10px,
+      transparent 10px 16px,
+      color-mix(in oklab, #ffffff 7%, transparent) 16px 32px,
+      transparent 32px 40px,
+      color-mix(in oklab, #ffffff 13%, transparent) 40px 52px,
+      transparent 52px 62px
+    );
+}
+
+/* Scoreboard-style panel */
+@utility scoreboard {
+  background: linear-gradient(180deg, var(--night-2), var(--night));
+  color: #ffffff;
+  border: 1px solid color-mix(in oklab, var(--sky) 30%, transparent);
+  box-shadow: 0 18px 40px -24px color-mix(in oklab, var(--night) 90%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Yellow tennis-ball accent chip */
+@utility ace-chip {
+  background: var(--ace);
+  color: var(--night);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Floodlight glow around a focal element */
+@utility floodlight {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--sky) 25%, transparent),
+    0 24px 60px -28px color-mix(in oklab, var(--sky) 70%, transparent);
 }

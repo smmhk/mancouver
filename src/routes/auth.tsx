@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import heroImage from "@/assets/mancouver-hero-v3.jpg";
+import heroImage from "@/assets/usopen-hero.jpg";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -174,21 +174,29 @@ function AuthPage() {
       <main className="flex-1 flex items-start justify-center px-5 py-8">
         <div className="w-full max-w-md">
           {/* Hero */}
-          <div className="mb-6 overflow-hidden rounded-3xl border border-border shadow-md bg-card">
+          <div className="mb-6 relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl night-band floodlight">
             <img
               src={heroImage}
-              alt="Mancouver — Find Your Next Rally"
+              alt="Night tennis under stadium floodlights with the New York skyline behind the court"
               width={1536}
               height={1024}
-              className="w-full h-auto object-cover"
+              className="w-full h-auto object-cover opacity-95"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-night via-night/40 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-5 court-lines">
+              <span className="inline-block px-2 py-0.5 rounded ace-chip text-[10px]">Night Session</span>
+              <h1 className="mt-2 font-display text-4xl leading-none text-white">
+                Man<span className="text-ace">couver</span>
+              </h1>
+              <p className="mt-1 text-[11px] uppercase tracking-[0.3em] text-white/75">Find Your Next Rally</p>
+            </div>
           </div>
 
           {/* Card */}
           <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
             {mode === "login" ? (
               <div className="mb-5 text-center">
-                <h1 className="font-display text-3xl text-foreground">Welcome Back</h1>
+                <h2 className="font-display text-3xl text-foreground">Welcome Back</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Log in to continue to Mancouver
                 </p>
@@ -198,12 +206,13 @@ function AuthPage() {
               </div>
             ) : (
               <div className="mb-5 text-center">
-                <h1 className="font-display text-3xl text-foreground">Join Mancouver</h1>
+                <h2 className="font-display text-3xl text-foreground">Join Mancouver</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Join Vancouver's tennis community and organize your next match.
                 </p>
               </div>
             )}
+
 
             {pendingVerifyEmail && (
               <div className="mb-4 rounded-2xl border border-border bg-cream p-4 text-sm">
