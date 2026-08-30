@@ -339,10 +339,7 @@ function HomePage() {
     .toUpperCase();
 
   const openCreate = (d: Date) => {
-    if (isGuest) {
-      setGateOpen(true);
-      return;
-    }
+    // Guests can walk the full booking flow; the gate appears at "Create Session".
     setCreateDefault(d);
     setCreateOpen(true);
   };
@@ -630,6 +627,7 @@ function HomePage() {
         open={createOpen}
         onOpenChange={setCreateOpen}
         defaultDate={createDefault}
+        onGuestSubmit={isGuest ? () => { setCreateOpen(false); setGateOpen(true); } : undefined}
       />
       {user && (
         <AccountSettingsDialog
