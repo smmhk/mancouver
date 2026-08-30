@@ -338,6 +338,20 @@ function HomePage() {
     .slice(0, 2)
     .toUpperCase();
 
+  const openCreate = (d: Date) => {
+    if (isGuest) {
+      setGateOpen(true);
+      return;
+    }
+    setCreateDefault(d);
+    setCreateOpen(true);
+  };
+
+  const exitGuest = () => {
+    setGuestMode(false);
+    window.location.href = "/auth";
+  };
+
   return (
     <div className="min-h-screen bg-surface text-foreground pb-28 md:pb-0">
       {/* Header */}
