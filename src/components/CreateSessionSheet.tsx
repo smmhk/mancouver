@@ -49,11 +49,14 @@ export function CreateSessionSheet({
   onOpenChange,
   defaultDate,
   trigger,
+  onGuestSubmit,
 }: {
   open?: boolean;
   onOpenChange?: (b: boolean) => void;
   defaultDate?: Date;
   trigger?: React.ReactNode;
+  /** When provided, the final "Create Session" click calls this instead of writing data. */
+  onGuestSubmit?: () => void;
 }) {
   const qc = useQueryClient();
   const { user } = useAuth();
