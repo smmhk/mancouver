@@ -1,5 +1,6 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
+import { useGuestMode } from "@/lib/guest-mode";
 
 export const Route = createFileRoute("/")({
   component: Index,
