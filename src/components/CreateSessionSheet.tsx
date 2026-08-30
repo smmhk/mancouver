@@ -49,11 +49,14 @@ export function CreateSessionSheet({
   onOpenChange,
   defaultDate,
   trigger,
+  onGuestSubmit,
 }: {
   open?: boolean;
   onOpenChange?: (b: boolean) => void;
   defaultDate?: Date;
   trigger?: React.ReactNode;
+  /** When provided, the final "Create Session" click calls this instead of writing data. */
+  onGuestSubmit?: () => void;
 }) {
   const qc = useQueryClient();
   const { user } = useAuth();
@@ -208,6 +211,14 @@ export function CreateSessionSheet({
 
 
   const canSubmit = !!date && !!courtId && slots.length > 0 && !create.isPending;
+
+  const submit = () => {
+    if (onGuestSubmit) {
+      onGuestSubmit();
+      return;
+    }
+    create.mutate();
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -457,7 +468,7 @@ export function CreateSessionSheet({
         {/* Sticky action bar */}
         <div className="border-t border-border bg-card px-4 sm:px-5 py-3">
           <Button
-            onClick={() => create.mutate()}
+            onClick={submit}
             disabled={!canSubmit}
             className="w-full h-12 bg-brand text-white hover:bg-brand-dark rounded-xl font-semibold tracking-tight text-base shadow-lg shadow-brand/20"
           >
