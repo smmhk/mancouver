@@ -363,35 +363,71 @@ function HomePage() {
           <p className="text-[10px] text-white/70 uppercase tracking-[0.25em]">Find Your Next Rally</p>
         </Link>
         <div className="flex items-center gap-3 relative z-10">
-          <div className="text-right hidden sm:block">
-            <p className="text-xs font-semibold truncate max-w-[140px] text-white">{profile?.display_name ?? user?.email}</p>
-            {profile?.ntrp_rating != null && (
-              <p className="text-[10px] text-ace uppercase tracking-widest">NTRP {profile.ntrp_rating}</p>
-            )}
-          </div>
+          {isGuest ? (
+            <>
+              <span className="hidden sm:inline px-2 py-0.5 rounded ace-chip text-[10px] font-bold uppercase tracking-wider">
+                Guest
+              </span>
+              <Button
+                onClick={() => setGateOpen(true)}
+                className="h-9 rounded-xl bg-brand text-white hover:bg-brand-dark text-xs font-bold uppercase tracking-wider"
+              >
+                Sign Up
+              </Button>
+              <button
+                onClick={exitGuest}
+                className="text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-ace"
+              >
+                Log In
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="text-right hidden sm:block">
+                <p className="text-xs font-semibold truncate max-w-[140px] text-white">{profile?.display_name ?? user?.email}</p>
+                {profile?.ntrp_rating != null && (
+                  <p className="text-[10px] text-ace uppercase tracking-widest">NTRP {profile.ntrp_rating}</p>
+                )}
+              </div>
 
-          <button
-            type="button"
-            onClick={() => setAccountOpen(true)}
-            className="size-10 rounded-full bg-white/10 border border-white/25 grid place-items-center overflow-hidden hover:ring-2 hover:ring-ace/60 transition"
-            aria-label="Account settings"
-          >
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="Your avatar" className="size-full object-cover" />
-            ) : (
-              <span className="text-ace font-bold text-xs">{initials}</span>
-            )}
-          </button>
-          <button
-            onClick={() => signOut()}
-            className="size-9 grid place-items-center rounded-full text-white/70 hover:text-ace"
-            aria-label="Sign out"
-          >
-            <LogOut className="size-4" />
-          </button>
-
+              <button
+                type="button"
+                onClick={() => setAccountOpen(true)}
+                className="size-10 rounded-full bg-white/10 border border-white/25 grid place-items-center overflow-hidden hover:ring-2 hover:ring-ace/60 transition"
+                aria-label="Account settings"
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Your avatar" className="size-full object-cover" />
+                ) : (
+                  <span className="text-ace font-bold text-xs">{initials}</span>
+                )}
+              </button>
+              <button
+                onClick={() => signOut()}
+                className="size-9 grid place-items-center rounded-full text-white/70 hover:text-ace"
+                aria-label="Sign out"
+              >
+                <LogOut className="size-4" />
+              </button>
+            </>
+          )}
         </div>
       </header>
+
+      {isGuest && (
+        <div className="bg-ace/15 border-b border-ace/30 px-5 md:px-8 py-3 text-xs text-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="font-semibold">Guest preview —</span>
+          <span className="text-muted-foreground">
+            You're browsing Mancouver as a guest. Sign up to create or join tennis sessions and start playing!
+          </span>
+          <button
+            onClick={() => setGateOpen(true)}
+            className="font-bold uppercase tracking-wider text-brand hover:text-brand-dark"
+          >
+            Sign Up
+          </button>
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto flex flex-col md:flex-row">
         {/* LEFT: Sessions + Calendar */}
