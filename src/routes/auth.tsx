@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { readRememberedLogin, saveRememberedLogin, clearRememberedLogin } from "@/lib/remember-me";
+import { setGuestMode } from "@/lib/guest-mode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -326,6 +327,23 @@ function AuthPage() {
                 {busy ? "..." : mode === "signup" ? "Create Account" : "Log In"}
               </Button>
             </form>
+
+            <div className="mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setGuestMode(true);
+                  navigate({ to: "/home" });
+                }}
+                className="w-full rounded-xl h-12 font-semibold uppercase tracking-wider"
+              >
+                Browse as Guest
+              </Button>
+              <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                Explore Mancouver read-only — no account needed.
+              </p>
+            </div>
 
             <div className="mt-5 text-center text-sm text-muted-foreground">
               {mode === "login" ? (
