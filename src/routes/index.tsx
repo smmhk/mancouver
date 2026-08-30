@@ -8,6 +8,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { session, loading } = useAuth();
+  const guest = useGuestMode();
   if (loading) {
     return (
       <div className="min-h-screen grid place-items-center bg-surface">
