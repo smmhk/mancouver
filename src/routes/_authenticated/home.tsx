@@ -527,10 +527,7 @@ function HomePage() {
                   {selectedDate ? "No sessions on this day yet." : "No upcoming games. Be the first to host!"}
                 </p>
                 <Button
-                  onClick={() => {
-                    setCreateDefault(selectedDate ?? new Date());
-                    setCreateOpen(true);
-                  }}
+                  onClick={() => openCreate(selectedDate ?? new Date())}
                   className="bg-brand text-white hover:bg-brand-dark font-bold rounded-xl"
                 >
                   <Plus className="size-4 mr-1" /> Host a Game
@@ -541,8 +538,8 @@ function HomePage() {
                 <SessionCard
                   key={s.id}
                   s={s}
-                  onJoin={(id) => join.mutate(id)}
-                  onLeave={(id) => leave.mutate(id)}
+                  onJoin={(id) => (isGuest ? setGateOpen(true) : join.mutate(id))}
+                  onLeave={(id) => (isGuest ? setGateOpen(true) : leave.mutate(id))}
                   busy={join.isPending || leave.isPending}
                 />
               ))
@@ -559,7 +556,7 @@ function HomePage() {
             </div>
 
             <Button
-              onClick={() => { setCreateDefault(selectedDate ?? new Date()); setCreateOpen(true); }}
+              onClick={() => openCreate(selectedDate ?? new Date())}
               className="w-full h-14 bg-brand text-white hover:bg-brand-dark rounded-2xl font-semibold tracking-tight text-base shadow-xl shadow-brand/10"
             >
               <Plus className="size-5 mr-1" /> Host a Game
@@ -608,7 +605,7 @@ function HomePage() {
           <span className="text-[10px] font-bold uppercase tracking-tighter">Home</span>
         </div>
         <button
-          onClick={() => { setCreateDefault(selectedDate ?? new Date()); setCreateOpen(true); }}
+          onClick={() => openCreate(selectedDate ?? new Date())}
           className="flex flex-col items-center -translate-y-5"
           aria-label="Host a game"
         >
@@ -617,13 +614,17 @@ function HomePage() {
           </div>
         </button>
         <button
-          onClick={() => signOut()}
+          onClick={() => (isGuest ? exitGuest() : signOut())}
           className="flex flex-col items-center gap-1 opacity-60"
         >
           <LogOut className="size-4 mb-1" />
-          <span className="text-[10px] font-bold uppercase tracking-tighter">Sign out</span>
+          <span className="text-[10px] font-bold uppercase tracking-tighter">
+            {isGuest ? "Sign in" : "Sign out"}
+          </span>
         </button>
       </nav>
+
+      <GuestGateDialog open={gateOpen} onOpenChange={setGateOpen} />
 
       <CreateSessionSheet
         open={createOpen}
