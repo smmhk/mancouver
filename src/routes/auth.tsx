@@ -88,7 +88,11 @@ function AuthPage() {
 
   const search = Route.useSearch();
   useEffect(() => {
+    if (search.mode) setMode(search.mode);
+  }, [search.mode]);
+  useEffect(() => {
     if (session) {
+      setGuestMode(false);
       const dest = safeNext(search.next);
       if (dest) {
         window.location.replace(dest);
