@@ -39,6 +39,10 @@ type CourtRef = { id: string; latitude: number; longitude: number };
 
 function HomePage() {
   const { user, signOut } = useAuth();
+  const guestMode = useGuestMode();
+  const isGuest = !user && guestMode;
+  const [gateOpen, setGateOpen] = useState(false);
+  const fetchPublicSessions = useServerFn(listPublicSessions);
   const qc = useQueryClient();
   const [month, setMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
