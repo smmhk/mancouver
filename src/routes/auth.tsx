@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { readRememberedLogin, saveRememberedLogin, clearRememberedLogin } from "@/lib/remember-me";
+import { setGuestMode } from "@/lib/guest-mode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
   validateSearch: (s: Record<string, unknown>) => ({
     next: typeof s.next === "string" ? s.next : undefined,
+    mode: s.mode === "signup" || s.mode === "login" ? (s.mode as "signup" | "login") : undefined,
   }),
   head: () => ({
     meta: [
@@ -87,7 +89,11 @@ function AuthPage() {
 
   const search = Route.useSearch();
   useEffect(() => {
+    if (search.mode) setMode(search.mode);
+  }, [search.mode]);
+  useEffect(() => {
     if (session) {
+      setGuestMode(false);
       const dest = safeNext(search.next);
       if (dest) {
         window.location.replace(dest);
@@ -321,6 +327,23 @@ function AuthPage() {
                 {busy ? "..." : mode === "signup" ? "Create Account" : "Log In"}
               </Button>
             </form>
+
+            <div className="mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setGuestMode(true);
+                  navigate({ to: "/home" });
+                }}
+                className="w-full rounded-xl h-12 font-semibold uppercase tracking-wider"
+              >
+                Browse as Guest
+              </Button>
+              <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                Explore Mancouver read-only — no account needed.
+              </p>
+            </div>
 
             <div className="mt-5 text-center text-sm text-muted-foreground">
               {mode === "login" ? (

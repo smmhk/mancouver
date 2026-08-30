@@ -21,6 +21,9 @@ import {
 } from "@/lib/weather";
 import { persistCourtForecast } from "@/lib/weather.functions";
 import { filterAndSortSessions } from "@/lib/sessions";
+import { useGuestMode, setGuestMode } from "@/lib/guest-mode";
+import { GuestGateDialog } from "@/components/GuestGateDialog";
+import { listPublicSessions } from "@/lib/public-sessions.functions";
 
 export const Route = createFileRoute("/_authenticated/home")({
   component: HomePage,
@@ -36,6 +39,10 @@ type CourtRef = { id: string; latitude: number; longitude: number };
 
 function HomePage() {
   const { user, signOut } = useAuth();
+  const guestMode = useGuestMode();
+  const isGuest = !user && guestMode;
+  const [gateOpen, setGateOpen] = useState(false);
+  const fetchPublicSessions = useServerFn(listPublicSessions);
   const qc = useQueryClient();
   const [month, setMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -92,8 +99,35 @@ function HomePage() {
   }, [user, profile]);
 
   const { data: sessionsRaw = [], isLoading } = useQuery({
-    queryKey: ["sessions"],
+    queryKey: ["sessions", isGuest ? "guest" : user?.id],
+    enabled: !!user || isGuest,
     queryFn: async () => {
+      // Guests read an anonymized, read-only feed via a server function.
+      if (isGuest) {
+        const rows = await fetchPublicSessions();
+        return rows.map((s) => ({
+          id: s.id,
+          session_date: s.session_date,
+          start_time: s.start_time,
+          end_time: s.end_time,
+          ntrp_min: s.ntrp_min,
+          ntrp_max: s.ntrp_max,
+          max_players: s.max_players,
+          status: s.status,
+          court: s.court,
+          participant_count: s.participant_count,
+          joined: false,
+          is_creator: false,
+          participants: Array.from({ length: s.participant_count }, (_, i) => ({
+            user_id: `guest-${s.id}-${i}`,
+            display_name: `Player ${i + 1}`,
+          })),
+          guests: Array.from({ length: s.guest_count }, (_, i) => ({
+            id: `guest-slot-${s.id}-${i}`,
+            guest_name: "Guest player",
+          })),
+        }));
+      }
       const cutoffDate = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
       const twoDaysAgo = format(cutoffDate, "yyyy-MM-dd");
       const { data, error } = await supabase
@@ -304,6 +338,20 @@ function HomePage() {
     .slice(0, 2)
     .toUpperCase();
 
+  const openCreate = (d: Date) => {
+    if (isGuest) {
+      setGateOpen(true);
+      return;
+    }
+    setCreateDefault(d);
+    setCreateOpen(true);
+  };
+
+  const exitGuest = () => {
+    setGuestMode(false);
+    window.location.href = "/auth";
+  };
+
   return (
     <div className="min-h-screen bg-surface text-foreground pb-28 md:pb-0">
       {/* Header */}
@@ -315,35 +363,71 @@ function HomePage() {
           <p className="text-[10px] text-white/70 uppercase tracking-[0.25em]">Find Your Next Rally</p>
         </Link>
         <div className="flex items-center gap-3 relative z-10">
-          <div className="text-right hidden sm:block">
-            <p className="text-xs font-semibold truncate max-w-[140px] text-white">{profile?.display_name ?? user?.email}</p>
-            {profile?.ntrp_rating != null && (
-              <p className="text-[10px] text-ace uppercase tracking-widest">NTRP {profile.ntrp_rating}</p>
-            )}
-          </div>
+          {isGuest ? (
+            <>
+              <span className="hidden sm:inline px-2 py-0.5 rounded ace-chip text-[10px] font-bold uppercase tracking-wider">
+                Guest
+              </span>
+              <Button
+                onClick={() => setGateOpen(true)}
+                className="h-9 rounded-xl bg-brand text-white hover:bg-brand-dark text-xs font-bold uppercase tracking-wider"
+              >
+                Sign Up
+              </Button>
+              <button
+                onClick={exitGuest}
+                className="text-[10px] font-bold uppercase tracking-wider text-white/70 hover:text-ace"
+              >
+                Log In
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="text-right hidden sm:block">
+                <p className="text-xs font-semibold truncate max-w-[140px] text-white">{profile?.display_name ?? user?.email}</p>
+                {profile?.ntrp_rating != null && (
+                  <p className="text-[10px] text-ace uppercase tracking-widest">NTRP {profile.ntrp_rating}</p>
+                )}
+              </div>
 
-          <button
-            type="button"
-            onClick={() => setAccountOpen(true)}
-            className="size-10 rounded-full bg-white/10 border border-white/25 grid place-items-center overflow-hidden hover:ring-2 hover:ring-ace/60 transition"
-            aria-label="Account settings"
-          >
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="Your avatar" className="size-full object-cover" />
-            ) : (
-              <span className="text-ace font-bold text-xs">{initials}</span>
-            )}
-          </button>
-          <button
-            onClick={() => signOut()}
-            className="size-9 grid place-items-center rounded-full text-white/70 hover:text-ace"
-            aria-label="Sign out"
-          >
-            <LogOut className="size-4" />
-          </button>
-
+              <button
+                type="button"
+                onClick={() => setAccountOpen(true)}
+                className="size-10 rounded-full bg-white/10 border border-white/25 grid place-items-center overflow-hidden hover:ring-2 hover:ring-ace/60 transition"
+                aria-label="Account settings"
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Your avatar" className="size-full object-cover" />
+                ) : (
+                  <span className="text-ace font-bold text-xs">{initials}</span>
+                )}
+              </button>
+              <button
+                onClick={() => signOut()}
+                className="size-9 grid place-items-center rounded-full text-white/70 hover:text-ace"
+                aria-label="Sign out"
+              >
+                <LogOut className="size-4" />
+              </button>
+            </>
+          )}
         </div>
       </header>
+
+      {isGuest && (
+        <div className="bg-ace/15 border-b border-ace/30 px-5 md:px-8 py-3 text-xs text-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="font-semibold">Guest preview —</span>
+          <span className="text-muted-foreground">
+            You're browsing Mancouver as a guest. Sign up to create or join tennis sessions and start playing!
+          </span>
+          <button
+            onClick={() => setGateOpen(true)}
+            className="font-bold uppercase tracking-wider text-brand hover:text-brand-dark"
+          >
+            Sign Up
+          </button>
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto flex flex-col md:flex-row">
         {/* LEFT: Sessions + Calendar */}
@@ -443,10 +527,7 @@ function HomePage() {
                   {selectedDate ? "No sessions on this day yet." : "No upcoming games. Be the first to host!"}
                 </p>
                 <Button
-                  onClick={() => {
-                    setCreateDefault(selectedDate ?? new Date());
-                    setCreateOpen(true);
-                  }}
+                  onClick={() => openCreate(selectedDate ?? new Date())}
                   className="bg-brand text-white hover:bg-brand-dark font-bold rounded-xl"
                 >
                   <Plus className="size-4 mr-1" /> Host a Game
@@ -457,8 +538,8 @@ function HomePage() {
                 <SessionCard
                   key={s.id}
                   s={s}
-                  onJoin={(id) => join.mutate(id)}
-                  onLeave={(id) => leave.mutate(id)}
+                  onJoin={(id) => (isGuest ? setGateOpen(true) : join.mutate(id))}
+                  onLeave={(id) => (isGuest ? setGateOpen(true) : leave.mutate(id))}
                   busy={join.isPending || leave.isPending}
                 />
               ))
@@ -475,7 +556,7 @@ function HomePage() {
             </div>
 
             <Button
-              onClick={() => { setCreateDefault(selectedDate ?? new Date()); setCreateOpen(true); }}
+              onClick={() => openCreate(selectedDate ?? new Date())}
               className="w-full h-14 bg-brand text-white hover:bg-brand-dark rounded-2xl font-semibold tracking-tight text-base shadow-xl shadow-brand/10"
             >
               <Plus className="size-5 mr-1" /> Host a Game
@@ -524,7 +605,7 @@ function HomePage() {
           <span className="text-[10px] font-bold uppercase tracking-tighter">Home</span>
         </div>
         <button
-          onClick={() => { setCreateDefault(selectedDate ?? new Date()); setCreateOpen(true); }}
+          onClick={() => openCreate(selectedDate ?? new Date())}
           className="flex flex-col items-center -translate-y-5"
           aria-label="Host a game"
         >
@@ -533,13 +614,17 @@ function HomePage() {
           </div>
         </button>
         <button
-          onClick={() => signOut()}
+          onClick={() => (isGuest ? exitGuest() : signOut())}
           className="flex flex-col items-center gap-1 opacity-60"
         >
           <LogOut className="size-4 mb-1" />
-          <span className="text-[10px] font-bold uppercase tracking-tighter">Sign out</span>
+          <span className="text-[10px] font-bold uppercase tracking-tighter">
+            {isGuest ? "Sign in" : "Sign out"}
+          </span>
         </button>
       </nav>
+
+      <GuestGateDialog open={gateOpen} onOpenChange={setGateOpen} />
 
       <CreateSessionSheet
         open={createOpen}

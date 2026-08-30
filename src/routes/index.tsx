@@ -1,5 +1,6 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
+import { useGuestMode } from "@/lib/guest-mode";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -7,6 +8,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { session, loading } = useAuth();
+  const guest = useGuestMode();
   if (loading) {
     return (
       <div className="min-h-screen grid place-items-center bg-surface">
@@ -14,5 +16,5 @@ function Index() {
       </div>
     );
   }
-  return <Navigate to={session ? "/home" : "/auth"} replace />;
+  return <Navigate to={session || guest ? "/home" : "/auth"} replace />;
 }
