@@ -99,8 +99,35 @@ function HomePage() {
   }, [user, profile]);
 
   const { data: sessionsRaw = [], isLoading } = useQuery({
-    queryKey: ["sessions"],
+    queryKey: ["sessions", isGuest ? "guest" : user?.id],
+    enabled: !!user || isGuest,
     queryFn: async () => {
+      // Guests read an anonymized, read-only feed via a server function.
+      if (isGuest) {
+        const rows = await fetchPublicSessions();
+        return rows.map((s) => ({
+          id: s.id,
+          session_date: s.session_date,
+          start_time: s.start_time,
+          end_time: s.end_time,
+          ntrp_min: s.ntrp_min,
+          ntrp_max: s.ntrp_max,
+          max_players: s.max_players,
+          status: s.status,
+          court: s.court,
+          participant_count: s.participant_count,
+          joined: false,
+          is_creator: false,
+          participants: Array.from({ length: s.participant_count }, (_, i) => ({
+            user_id: `guest-${s.id}-${i}`,
+            display_name: `Player ${i + 1}`,
+          })),
+          guests: Array.from({ length: s.guest_count }, (_, i) => ({
+            id: `guest-slot-${s.id}-${i}`,
+            guest_name: "Guest player",
+          })),
+        }));
+      }
       const cutoffDate = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
       const twoDaysAgo = format(cutoffDate, "yyyy-MM-dd");
       const { data, error } = await supabase
