@@ -212,6 +212,14 @@ export function CreateSessionSheet({
 
   const canSubmit = !!date && !!courtId && slots.length > 0 && !create.isPending;
 
+  const submit = () => {
+    if (onGuestSubmit) {
+      onGuestSubmit();
+      return;
+    }
+    create.mutate();
+  };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
@@ -460,7 +468,7 @@ export function CreateSessionSheet({
         {/* Sticky action bar */}
         <div className="border-t border-border bg-card px-4 sm:px-5 py-3">
           <Button
-            onClick={() => create.mutate()}
+            onClick={submit}
             disabled={!canSubmit}
             className="w-full h-12 bg-brand text-white hover:bg-brand-dark rounded-xl font-semibold tracking-tight text-base shadow-lg shadow-brand/20"
           >
