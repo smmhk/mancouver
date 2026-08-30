@@ -16,5 +16,5 @@ function Index() {
       </div>
     );
   }
-  return <Navigate to={session ? "/home" : "/auth"} replace />;
+  return <Navigate to={session || guest ? "/home" : "/auth"} replace />;
 }
