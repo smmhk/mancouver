@@ -21,6 +21,9 @@ import {
 } from "@/lib/weather";
 import { persistCourtForecast } from "@/lib/weather.functions";
 import { filterAndSortSessions } from "@/lib/sessions";
+import { useGuestMode, setGuestMode } from "@/lib/guest-mode";
+import { GuestGateDialog } from "@/components/GuestGateDialog";
+import { listPublicSessions } from "@/lib/public-sessions.functions";
 
 export const Route = createFileRoute("/_authenticated/home")({
   component: HomePage,
