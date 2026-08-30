@@ -22,7 +22,7 @@ function AuthGate() {
   if (!session) {
     const next =
       typeof window !== "undefined" ? window.location.pathname + window.location.search : undefined;
-    return <Navigate to="/auth" search={{ next }} replace />;
+    return <Navigate to="/auth" search={{ next, mode: undefined }} replace />;
   }
   return <Outlet />;
 }

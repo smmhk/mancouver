@@ -22,7 +22,7 @@ export function GuestGateDialog({
   const go = (mode: "signup" | "login") => {
     setGuestMode(false);
     onOpenChange(false);
-    navigate({ to: "/auth", search: { mode } });
+    navigate({ to: "/auth", search: { mode, next: undefined } });
   };
 
   return (

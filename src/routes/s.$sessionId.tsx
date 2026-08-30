@@ -110,7 +110,7 @@ function SharedSessionPage() {
   }
 
   if (!session) {
-    return <Navigate to="/auth" search={{ next: `/s/${sessionId}` }} replace />;
+    return <Navigate to="/auth" search={{ next: `/s/${sessionId}`, mode: undefined }} replace />;
   }
 
   if (q.isLoading) {
