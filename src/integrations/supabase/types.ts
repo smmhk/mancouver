@@ -59,6 +59,27 @@ export type Database = {
         }
         Relationships: []
       }
+      email_notification_sends: {
+        Row: {
+          created_at: string
+          event_key: string
+          event_type: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          event_key: string
+          event_type: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          event_key?: string
+          event_type?: string
+          id?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -172,6 +193,24 @@ export type Database = {
           },
         ]
       }
+      hook_tokens: {
+        Row: {
+          created_at: string
+          purpose: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          purpose: string
+          token: string
+        }
+        Update: {
+          created_at?: string
+          purpose?: string
+          token?: string
+        }
+        Relationships: []
+      }
       notification_settings: {
         Row: {
           created_at: string
@@ -180,6 +219,7 @@ export type Database = {
           session_cancelled: boolean
           session_created: boolean
           session_joined: boolean
+          session_message: boolean
           session_reminder: boolean
           updated_at: string
           user_id: string
@@ -191,6 +231,7 @@ export type Database = {
           session_cancelled?: boolean
           session_created?: boolean
           session_joined?: boolean
+          session_message?: boolean
           session_reminder?: boolean
           updated_at?: string
           user_id: string
@@ -202,6 +243,7 @@ export type Database = {
           session_cancelled?: boolean
           session_created?: boolean
           session_joined?: boolean
+          session_message?: boolean
           session_reminder?: boolean
           updated_at?: string
           user_id?: string
@@ -556,6 +598,10 @@ export type Database = {
           _start_time: string
         }
         Returns: Json
+      }
+      call_notify_hook: {
+        Args: { _body: Json; _path: string }
+        Returns: undefined
       }
       leave_session: { Args: { _session_id: string }; Returns: Json }
     }

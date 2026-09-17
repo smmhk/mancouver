@@ -1,5 +1,7 @@
 import type { ComponentType } from 'react'
 import { template as sessionReminderTemplate } from './session-reminder'
+import { template as sessionJoinedTemplate } from './session-joined'
+import { template as sessionChatMessageTemplate } from './session-chat-message'
 
 
 export interface TemplateEntry {
@@ -14,12 +16,9 @@ export interface TemplateEntry {
 /**
  * Template registry — maps template names to their React Email components.
  * Import and register new templates here after creating them in this directory.
- *
- * Example:
- *   import { template as welcomeTemplate } from './welcome'
- *   // then add to TEMPLATES: 'welcome': welcomeTemplate
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'session-reminder': sessionReminderTemplate,
+  'session-joined': sessionJoinedTemplate,
+  'session-chat-message': sessionChatMessageTemplate,
 }
-

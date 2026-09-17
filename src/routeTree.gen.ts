@@ -26,6 +26,8 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksSessionRemindersRouteImport } from './routes/api/public/hooks/session-reminders'
+import { Route as ApiPublicHooksSessionJoinedRouteImport } from './routes/api/public/hooks/session-joined'
+import { Route as ApiPublicHooksSessionChatMessageRouteImport } from './routes/api/public/hooks/session-chat-message'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -116,6 +118,18 @@ const ApiPublicHooksSessionRemindersRoute =
     path: '/api/public/hooks/session-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksSessionJoinedRoute =
+  ApiPublicHooksSessionJoinedRouteImport.update({
+    id: '/api/public/hooks/session-joined',
+    path: '/api/public/hooks/session-joined',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksSessionChatMessageRoute =
+  ApiPublicHooksSessionChatMessageRouteImport.update({
+    id: '/api/public/hooks/session-chat-message',
+    path: '/api/public/hooks/session-chat-message',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -130,6 +144,8 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/api/public/hooks/session-chat-message': typeof ApiPublicHooksSessionChatMessageRoute
+  '/api/public/hooks/session-joined': typeof ApiPublicHooksSessionJoinedRoute
   '/api/public/hooks/session-reminders': typeof ApiPublicHooksSessionRemindersRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -148,6 +164,8 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/api/public/hooks/session-chat-message': typeof ApiPublicHooksSessionChatMessageRoute
+  '/api/public/hooks/session-joined': typeof ApiPublicHooksSessionJoinedRoute
   '/api/public/hooks/session-reminders': typeof ApiPublicHooksSessionRemindersRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -168,6 +186,8 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/api/public/hooks/session-chat-message': typeof ApiPublicHooksSessionChatMessageRoute
+  '/api/public/hooks/session-joined': typeof ApiPublicHooksSessionJoinedRoute
   '/api/public/hooks/session-reminders': typeof ApiPublicHooksSessionRemindersRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -188,6 +208,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/lovable/email/events'
+    | '/api/public/hooks/session-chat-message'
+    | '/api/public/hooks/session-joined'
     | '/api/public/hooks/session-reminders'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -206,6 +228,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/lovable/email/events'
+    | '/api/public/hooks/session-chat-message'
+    | '/api/public/hooks/session-joined'
     | '/api/public/hooks/session-reminders'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -225,6 +249,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/lovable/email/events'
+    | '/api/public/hooks/session-chat-message'
+    | '/api/public/hooks/session-joined'
     | '/api/public/hooks/session-reminders'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -244,6 +270,8 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
+  ApiPublicHooksSessionChatMessageRoute: typeof ApiPublicHooksSessionChatMessageRoute
+  ApiPublicHooksSessionJoinedRoute: typeof ApiPublicHooksSessionJoinedRoute
   ApiPublicHooksSessionRemindersRoute: typeof ApiPublicHooksSessionRemindersRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -371,6 +399,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksSessionRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/session-joined': {
+      id: '/api/public/hooks/session-joined'
+      path: '/api/public/hooks/session-joined'
+      fullPath: '/api/public/hooks/session-joined'
+      preLoaderRoute: typeof ApiPublicHooksSessionJoinedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/session-chat-message': {
+      id: '/api/public/hooks/session-chat-message'
+      path: '/api/public/hooks/session-chat-message'
+      fullPath: '/api/public/hooks/session-chat-message'
+      preLoaderRoute: typeof ApiPublicHooksSessionChatMessageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -399,6 +441,8 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
+  ApiPublicHooksSessionChatMessageRoute: ApiPublicHooksSessionChatMessageRoute,
+  ApiPublicHooksSessionJoinedRoute: ApiPublicHooksSessionJoinedRoute,
   ApiPublicHooksSessionRemindersRoute: ApiPublicHooksSessionRemindersRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
