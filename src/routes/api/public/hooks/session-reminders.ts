@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { createClient } from '@supabase/supabase-js'
 import { enqueueTemplateEmail } from '@/lib/email-templates/enqueue.server'
+import { serviceClient, verifyHookRequest } from '@/lib/hooks/hook-auth.server'
 
 const TZ = 'America/Vancouver'
 const SITE_URL = 'https://mancouvertennis.live'
