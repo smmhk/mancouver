@@ -55,20 +55,13 @@ export const Route = createFileRoute('/api/public/hooks/session-reminders')({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-        const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-        if (!supabaseUrl || !serviceKey) {
+        const supabase = serviceClient()
+        if (!supabase) {
           return Response.json({ error: 'Server configuration error' }, { status: 500 })
         }
-
-        const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '').trim()
-        if (!token || token !== serviceKey) {
+        if (!(await verifyHookRequest(request, supabase))) {
           return Response.json({ error: 'Unauthorized' }, { status: 401 })
         }
-
-        const supabase = createClient(supabaseUrl, serviceKey, {
-          auth: { persistSession: false, autoRefreshToken: false },
-        })
 
         const now = Date.now()
         const horizon = now + 24 * 60 * 60 * 1000
