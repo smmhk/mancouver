@@ -19,11 +19,12 @@ const NTRP_OPTIONS = ["Any", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5"];
 
 function generateSlots(): string[] {
   const slots: string[] = [];
-  for (let h = 7; h <= 20; h++) {
+  for (let h = 7; h <= 21; h++) {
     for (const m of [0, 30]) {
       slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
     }
   }
+  slots.push("22:00"); // latest start: 10:00 PM
   return slots;
 }
 
